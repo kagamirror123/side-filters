@@ -21,12 +21,12 @@ export interface LangPreset {
  */
 export type Placement = "results" | "wide";
 
-const PLACEMENTS: readonly Placement[] = ["results", "wide"];
+const PLACEMENTS = new Set<string>(["results", "wide"]);
 
 /** 設定画面の配色。system は OS の設定に従う */
 export type ThemePreference = "system" | "light" | "dark";
 
-const THEMES: readonly ThemePreference[] = ["system", "light", "dark"];
+const THEMES = new Set<string>(["system", "light", "dark"]);
 
 export interface Settings {
   terms: TermPreset[];
@@ -116,12 +116,14 @@ export function normalizeSettings(raw: unknown, defaults: Settings = defaultSett
     langs: normalizeLangs(raw.langs) ?? defaults.langs,
     showLangs: typeof raw.showLangs === "boolean" ? raw.showLangs : defaults.showLangs,
     showQuery: typeof raw.showQuery === "boolean" ? raw.showQuery : defaults.showQuery,
-    placement: PLACEMENTS.includes(raw.placement as Placement)
-      ? (raw.placement as Placement)
-      : defaults.placement,
-    theme: THEMES.includes(raw.theme as ThemePreference)
-      ? (raw.theme as ThemePreference)
-      : defaults.theme,
+    placement:
+      typeof raw.placement === "string" && PLACEMENTS.has(raw.placement)
+        ? (raw.placement as Placement)
+        : defaults.placement,
+    theme:
+      typeof raw.theme === "string" && THEMES.has(raw.theme)
+        ? (raw.theme as ThemePreference)
+        : defaults.theme,
   };
 }
 

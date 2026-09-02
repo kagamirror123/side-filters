@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Side Filters">
+  <!--
+    拡張がやっていることをそのまま形にした印。
+    左の縦長が検索結果、右の 2 本が横に出る絞り込みのチップ。
+    16px でも「左に本文、右に何かが並ぶ」と読めるよう、線ではなく面だけで描く。
+  -->
+  <rect width="128" height="128" rx="28" fill="#1a73e8" />
+
+  <!-- 検索結果の列 -->
+  <rect x="22" y="34" width="34" height="60" rx="8" fill="#ffffff" opacity="0.55" />
+
+  <!-- 絞り込みのチップ。上は選択中（塗り）、下は未選択（薄い） -->
+  <rect x="68" y="34" width="38" height="24" rx="12" fill="#ffffff" />
+  <rect x="68" y="70" width="38" height="24" rx="12" fill="#ffffff" opacity="0.55" />
+</svg>
