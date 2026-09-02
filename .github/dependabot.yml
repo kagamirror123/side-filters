@@ -1,0 +1,18 @@
+version: 2
+updates:
+  # 個人のリポジトリなので、まとめて 1 本の PR にして通知を減らす
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

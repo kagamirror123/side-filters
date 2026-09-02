@@ -1,0 +1,43 @@
+version: "3"
+
+tasks:
+  setup:
+    desc: 依存をインストールして拡張をビルドする
+    cmds:
+      - npm install
+      - task: build
+
+  dev:
+    desc: 変更を監視してビルドする (chrome://extensions で .output/chrome-mv3 を読み込む)
+    cmds:
+      - npm run dev
+
+  build:
+    desc: 拡張を .output/chrome-mv3 へビルドする
+    cmds:
+      - npm run build
+
+  zip:
+    desc: Chrome Web Store に上げる zip を .output/ に作る
+    cmds:
+      - npm run zip
+
+  check:
+    desc: lint・整形・型・テスト・ビルドをまとめて確認する (CI と同じ内容)
+    cmds:
+      - npm run lint
+      - npm run fmt:check
+      - npm run typecheck
+      - npm run test
+      - task: build
+
+  fix:
+    desc: lint と整形の自動修正をかける
+    cmds:
+      - npm run lint:fix
+      - npm run fmt
+
+  icons:
+    desc: assets/icon.svg から拡張用アイコンを作り直す
+    cmds:
+      - scripts/make-icons.sh

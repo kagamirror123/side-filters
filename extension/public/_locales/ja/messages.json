@@ -1,0 +1,270 @@
+{
+  "extName": {
+    "message": "Side Filters for Google Search",
+    "description": "ストアと chrome://extensions に出る拡張名"
+  },
+  "extDescription": {
+    "message": "Google 検索結果の横に、期間と言語で絞り込むチップをワンクリックで出します。",
+    "description": "ストアと chrome://extensions に出る短い説明"
+  },
+  "cardLabel": {
+    "message": "Side Filters",
+    "description": "カード全体の読み上げ名"
+  },
+  "openSettings": {
+    "message": "Side Filters の設定",
+    "description": "カード右上の歯車のツールチップと読み上げ名"
+  },
+  "sectionTerms": {
+    "message": "期間",
+    "description": "カードの期間の選択肢の見出し"
+  },
+  "sectionLangs": {
+    "message": "言語",
+    "description": "カードの言語の選択肢の見出し"
+  },
+  "termAll": {
+    "message": "全期間",
+    "description": "期間の絞り込みを解除する先頭の選択肢"
+  },
+  "langAll": {
+    "message": "全言語",
+    "description": "言語の絞り込みを解除する先頭の選択肢"
+  },
+  "termDay": {
+    "message": "24時間",
+    "description": "既定の期間: qdr=d"
+  },
+  "termWeek": {
+    "message": "1週間",
+    "description": "既定の期間: qdr=w"
+  },
+  "termMonth": {
+    "message": "1か月",
+    "description": "既定の期間: qdr=m"
+  },
+  "termHalfYear": {
+    "message": "6か月",
+    "description": "既定の期間: qdr=m6"
+  },
+  "termYear": {
+    "message": "1年",
+    "description": "既定の期間: qdr=y"
+  },
+  "termThreeYears": {
+    "message": "3年",
+    "description": "既定の期間: qdr=y3"
+  },
+  "langJapanese": {
+    "message": "日本語",
+    "description": "既定の言語: lr=lang_ja"
+  },
+  "langEnglish": {
+    "message": "英語",
+    "description": "既定の言語: lr=lang_en"
+  },
+  "optionsHeading": {
+    "message": "Side Filters",
+    "description": "設定画面の見出し"
+  },
+  "optionsLede": {
+    "message": "Google 検索結果の横に出すチップを決めます。変更は自動で保存され、開いている検索結果にもすぐ反映されます。",
+    "description": "設定画面の導入文"
+  },
+  "optionsTermsHeading": {
+    "message": "期間のプリセット",
+    "description": "期間プリセット編集の見出し"
+  },
+  "optionsLangsHeading": {
+    "message": "言語のプリセット",
+    "description": "言語プリセット編集の見出し"
+  },
+  "optionsShowLangs": {
+    "message": "言語のセクションを表示する",
+    "description": "カードの言語セクションごと出すかどうかのスイッチ"
+  },
+  "optionsFieldLabel": {
+    "message": "ラベル",
+    "description": "チップに出る文字の入力欄"
+  },
+  "optionsFieldCount": {
+    "message": "数",
+    "description": "期間プリセットの倍数の入力欄"
+  },
+  "optionsFieldUnit": {
+    "message": "単位",
+    "description": "期間プリセットの単位の選択欄"
+  },
+  "optionsFieldCode": {
+    "message": "言語コード",
+    "description": "Google の言語コードの入力欄"
+  },
+  "optionsAddTerm": {
+    "message": "期間を追加",
+    "description": "期間プリセットに行を足すボタン"
+  },
+  "optionsAddLang": {
+    "message": "言語を追加",
+    "description": "言語プリセットに行を足すボタン"
+  },
+  "optionsMoveUp": {
+    "message": "上へ移動",
+    "description": "並べ替えボタンの読み上げ名"
+  },
+  "optionsMoveDown": {
+    "message": "下へ移動",
+    "description": "並べ替えボタンの読み上げ名"
+  },
+  "optionsRemove": {
+    "message": "削除",
+    "description": "行を消すボタンの読み上げ名"
+  },
+  "optionsReset": {
+    "message": "既定に戻す",
+    "description": "プリセットをすべて既定で置き換えるボタン"
+  },
+  "optionsErrorLabel": {
+    "message": "ラベルを入力してください",
+    "description": "ラベルが空のときの検証メッセージ"
+  },
+  "optionsErrorCode": {
+    "message": "lang_ja のような形式で入力してください",
+    "description": "言語コードの形式が違うときの検証メッセージ"
+  },
+  "optionsEmptyTerms": {
+    "message": "期間のプリセットがありません。追加するまではカードに既定のプリセットが出ます。",
+    "description": "期間プリセットが空のときの表示"
+  },
+  "optionsEmptyLangs": {
+    "message": "言語のプリセットがありません。追加するまではカードに既定のプリセットが出ます。",
+    "description": "言語プリセットが空のときの表示"
+  },
+  "unitHour": {
+    "message": "時間",
+    "description": "期間の単位: qdr=h"
+  },
+  "unitDay": {
+    "message": "日",
+    "description": "期間の単位: qdr=d"
+  },
+  "unitWeek": {
+    "message": "週間",
+    "description": "期間の単位: qdr=w"
+  },
+  "unitMonth": {
+    "message": "か月",
+    "description": "期間の単位: qdr=m"
+  },
+  "unitYear": {
+    "message": "年",
+    "description": "期間の単位: qdr=y"
+  },
+  "optionsAppearanceHeading": {
+    "message": "外観",
+    "description": "テーマ設定の見出し"
+  },
+  "optionsThemeLabel": {
+    "message": "テーマ",
+    "description": "テーマ設定の選択欄のラベル"
+  },
+  "optionsThemeDescription": {
+    "message": "この設定画面の配色です。検索結果に出るカードは Google の配色に合わせます。",
+    "description": "テーマ選択欄の下の補足"
+  },
+  "themeSystem": {
+    "message": "システム設定に従う",
+    "description": "OS の設定に従うテーマ"
+  },
+  "themeLight": {
+    "message": "ライト",
+    "description": "テーマの選択肢"
+  },
+  "themeDark": {
+    "message": "ダーク",
+    "description": "テーマの選択肢"
+  },
+  "optionsCardHeading": {
+    "message": "カード",
+    "description": "検索結果のカードに関する設定の見出し"
+  },
+  "sectionQuery": {
+    "message": "検索語",
+    "description": "カードの検索語まわりの見出し"
+  },
+  "toggleSortByDate": {
+    "message": "日付順",
+    "description": "結果を日付順に並べ替えるチップ（tbs=sbd:1）"
+  },
+  "toggleVerbatim": {
+    "message": "完全一致",
+    "description": "同義語展開をやめるチップ（tbs=li:1）"
+  },
+  "togglePhrase": {
+    "message": "フレーズ",
+    "description": "検索語を引用符で囲むチップ"
+  },
+  "togglePhraseUnavailable": {
+    "message": "検索語に演算子や引用符が含まれるため、この検索では使えません。",
+    "description": "囲むと壊れるクエリのときのフレーズチップの説明"
+  },
+  "exclusionPlaceholder": {
+    "message": "除外する語",
+    "description": "カードの除外欄のプレースホルダ"
+  },
+  "exclusionRemove": {
+    "message": "除外から外す",
+    "description": "除外チップの × の読み上げ名"
+  },
+  "optionsShowQuery": {
+    "message": "検索語のセクションを表示する",
+    "description": "カードの検索語セクションを出すかどうかのスイッチ"
+  },
+  "toggleVerbatimHelp": {
+    "message": "同義語や表記ゆれに広げず、入力した語のまま検索します。",
+    "description": "完全一致チップのツールチップ"
+  },
+  "togglePhraseHelp": {
+    "message": "検索語全体を引用符で囲み、その並びのまま含むページだけを探します。",
+    "description": "フレーズチップのツールチップ"
+  },
+  "toggleSortByDateHelp": {
+    "message": "関連度順ではなく、新しいものから順に並べます。",
+    "description": "日付順チップのツールチップ"
+  },
+  "exclusionHelp": {
+    "message": "ここに入れた語を含むページを結果から外します。",
+    "description": "除外欄のツールチップ"
+  },
+  "togglePhraseSingleWord": {
+    "message": "1 語を囲んでも「完全一致」とほぼ同じになります。2 語以上のときに使えます。",
+    "description": "検索語が 1 語のときのフレーズチップの説明"
+  },
+  "optionsPlacementHeading": {
+    "message": "カードを出す場所",
+    "description": "置き場所の設定の見出し"
+  },
+  "placementResults": {
+    "message": "検索結果の右",
+    "description": "置き場所の選択肢: 既定の位置"
+  },
+  "placementResultsDetail": {
+    "message": "いつも同じ場所（検索結果の右上）に出ます。AI による概要が 1 行目を埋めているときは、そのすぐ下になります。",
+    "description": "既定の置き場所の説明"
+  },
+  "placementWide": {
+    "message": "空きがあれば右上",
+    "description": "置き場所の選択肢: 全幅の枠の右の空きを使う"
+  },
+  "placementWideDetail": {
+    "message": "AI による概要の横、その右の空きに上がります。ただし 1 行目が全幅で埋まっていて、かつウィンドウが十分広いとき（およそ 1750px 以上）だけで、それ以外は上の位置に戻ります。つまりカードの場所が一定しません。またその空きは Google の列の外なので、検索結果からは離れて見えます。",
+    "description": "右上に出す場合の説明とデメリット"
+  },
+  "placementResultsAlt": {
+    "message": "カードが 2 行目、検索結果の右に出る図",
+    "description": "既定の置き場所の図の代替テキスト"
+  },
+  "placementWideAlt": {
+    "message": "カードが 1 行目、全幅の枠の右に出る図",
+    "description": "右上に出す場合の図の代替テキスト"
+  }
+}

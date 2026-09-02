@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [".agents/**", ".claude/**", ".output/**", ".wxt/**", "node_modules/**"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-await-in-loop": "off",
+    "unicorn/consistent-function-scoping": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  }
+}

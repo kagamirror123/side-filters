@@ -1,0 +1,270 @@
+{
+  "extName": {
+    "message": "Side Filters for Google Search",
+    "description": "Extension name shown in the store and in chrome://extensions"
+  },
+  "extDescription": {
+    "message": "One-click time range and language filter chips beside Google Search results.",
+    "description": "Short description shown in the store and in chrome://extensions"
+  },
+  "cardLabel": {
+    "message": "Side Filters",
+    "description": "Accessible name of the whole card"
+  },
+  "openSettings": {
+    "message": "Side Filters settings",
+    "description": "Tooltip and accessible name of the gear button on the card"
+  },
+  "sectionTerms": {
+    "message": "Time",
+    "description": "Heading of the time range options on the card"
+  },
+  "sectionLangs": {
+    "message": "Language",
+    "description": "Heading of the language options on the card"
+  },
+  "termAll": {
+    "message": "Any time",
+    "description": "Leading option that clears the time filter"
+  },
+  "langAll": {
+    "message": "Any language",
+    "description": "Leading option that clears the language filter"
+  },
+  "termDay": {
+    "message": "24 hours",
+    "description": "Default time option: qdr=d"
+  },
+  "termWeek": {
+    "message": "Week",
+    "description": "Default time option: qdr=w"
+  },
+  "termMonth": {
+    "message": "Month",
+    "description": "Default time option: qdr=m"
+  },
+  "termHalfYear": {
+    "message": "6 months",
+    "description": "Default time option: qdr=m6"
+  },
+  "termYear": {
+    "message": "Year",
+    "description": "Default time option: qdr=y"
+  },
+  "termThreeYears": {
+    "message": "3 years",
+    "description": "Default time option: qdr=y3"
+  },
+  "langJapanese": {
+    "message": "Japanese",
+    "description": "Default language option: lr=lang_ja"
+  },
+  "langEnglish": {
+    "message": "English",
+    "description": "Default language option: lr=lang_en"
+  },
+  "optionsHeading": {
+    "message": "Side Filters",
+    "description": "Heading of the settings page"
+  },
+  "optionsLede": {
+    "message": "Choose the chips that appear beside your Google results. Changes are saved automatically and apply to open result pages right away.",
+    "description": "Intro paragraph on the settings page"
+  },
+  "optionsTermsHeading": {
+    "message": "Time presets",
+    "description": "Heading of the time preset editor"
+  },
+  "optionsLangsHeading": {
+    "message": "Language presets",
+    "description": "Heading of the language preset editor"
+  },
+  "optionsShowLangs": {
+    "message": "Show the language section",
+    "description": "Switch that hides or shows the whole language section on the card"
+  },
+  "optionsFieldLabel": {
+    "message": "Label",
+    "description": "Input label for the text shown on a chip"
+  },
+  "optionsFieldCount": {
+    "message": "Number",
+    "description": "Input label for the multiplier of a time preset"
+  },
+  "optionsFieldUnit": {
+    "message": "Unit",
+    "description": "Select label for the unit of a time preset"
+  },
+  "optionsFieldCode": {
+    "message": "Language code",
+    "description": "Input label for a Google language code"
+  },
+  "optionsAddTerm": {
+    "message": "Add a time preset",
+    "description": "Button that appends a row to the time presets"
+  },
+  "optionsAddLang": {
+    "message": "Add a language preset",
+    "description": "Button that appends a row to the language presets"
+  },
+  "optionsMoveUp": {
+    "message": "Move up",
+    "description": "Accessible name of the reorder button"
+  },
+  "optionsMoveDown": {
+    "message": "Move down",
+    "description": "Accessible name of the reorder button"
+  },
+  "optionsRemove": {
+    "message": "Remove",
+    "description": "Accessible name of the delete-row button"
+  },
+  "optionsReset": {
+    "message": "Restore defaults",
+    "description": "Button that replaces all presets with the defaults"
+  },
+  "optionsErrorLabel": {
+    "message": "Enter a label",
+    "description": "Validation error for an empty chip label"
+  },
+  "optionsErrorCode": {
+    "message": "Use a code like lang_ja",
+    "description": "Validation error for a malformed language code"
+  },
+  "optionsEmptyTerms": {
+    "message": "No time presets. The card falls back to the defaults until you add one.",
+    "description": "Shown when the time preset list is empty"
+  },
+  "optionsEmptyLangs": {
+    "message": "No language presets. The card falls back to the defaults until you add one.",
+    "description": "Shown when the language preset list is empty"
+  },
+  "unitHour": {
+    "message": "hours",
+    "description": "Time unit: qdr=h"
+  },
+  "unitDay": {
+    "message": "days",
+    "description": "Time unit: qdr=d"
+  },
+  "unitWeek": {
+    "message": "weeks",
+    "description": "Time unit: qdr=w"
+  },
+  "unitMonth": {
+    "message": "months",
+    "description": "Time unit: qdr=m"
+  },
+  "unitYear": {
+    "message": "years",
+    "description": "Time unit: qdr=y"
+  },
+  "optionsAppearanceHeading": {
+    "message": "Appearance",
+    "description": "Heading of the theme setting"
+  },
+  "optionsThemeLabel": {
+    "message": "Theme",
+    "description": "Select label for the theme setting"
+  },
+  "optionsThemeDescription": {
+    "message": "Applies to this settings page. The card beside search results follows Google's own theme.",
+    "description": "Helper text under the theme select"
+  },
+  "themeSystem": {
+    "message": "System",
+    "description": "Theme option that follows the operating system"
+  },
+  "themeLight": {
+    "message": "Light",
+    "description": "Theme option"
+  },
+  "themeDark": {
+    "message": "Dark",
+    "description": "Theme option"
+  },
+  "optionsCardHeading": {
+    "message": "Card",
+    "description": "Heading of the settings that change the card on search results"
+  },
+  "sectionQuery": {
+    "message": "Search terms",
+    "description": "Heading of the search-term options on the card"
+  },
+  "toggleSortByDate": {
+    "message": "By date",
+    "description": "Chip that sorts results by date (tbs=sbd:1)"
+  },
+  "toggleVerbatim": {
+    "message": "Verbatim",
+    "description": "Chip that turns off synonym expansion (tbs=li:1)"
+  },
+  "togglePhrase": {
+    "message": "Phrase",
+    "description": "Chip that wraps the search terms in quotes"
+  },
+  "togglePhraseUnavailable": {
+    "message": "Not available: the search terms contain an operator or quotes.",
+    "description": "Tooltip on the phrase chip when the query cannot be quoted safely"
+  },
+  "exclusionPlaceholder": {
+    "message": "Exclude a word",
+    "description": "Placeholder of the exclusion field on the card"
+  },
+  "exclusionRemove": {
+    "message": "Remove from the exclusions",
+    "description": "Accessible name of the × on an exclusion chip"
+  },
+  "optionsShowQuery": {
+    "message": "Show the search-term section",
+    "description": "Switch that hides or shows the search-term section on the card"
+  },
+  "toggleVerbatimHelp": {
+    "message": "Search the words exactly as typed, without synonyms or spelling variants.",
+    "description": "Tooltip on the verbatim chip"
+  },
+  "togglePhraseHelp": {
+    "message": "Wrap the search terms in quotes, so only pages with that exact wording match.",
+    "description": "Tooltip on the phrase chip"
+  },
+  "toggleSortByDateHelp": {
+    "message": "Order results newest first instead of by relevance.",
+    "description": "Tooltip on the sort-by-date chip"
+  },
+  "exclusionHelp": {
+    "message": "Pages containing these words are left out of the results.",
+    "description": "Tooltip on the exclusion field"
+  },
+  "togglePhraseSingleWord": {
+    "message": "Not available: quoting one word does the same as Verbatim. Enter two or more words.",
+    "description": "Tooltip on the phrase chip for a one-word query"
+  },
+  "optionsPlacementHeading": {
+    "message": "Where the card appears",
+    "description": "Heading of the placement setting"
+  },
+  "placementResults": {
+    "message": "Beside the results",
+    "description": "Placement option: the default position"
+  },
+  "placementResultsDetail": {
+    "message": "Always the same spot, at the top of the results column. When an AI Overview fills the first row, the card sits below it.",
+    "description": "Explanation of the default placement"
+  },
+  "placementWide": {
+    "message": "Top right when there is room",
+    "description": "Placement option: use the empty band beside a full-width block"
+  },
+  "placementWideDetail": {
+    "message": "Moves up beside an AI Overview, into the empty band on its right. Only when the first row is filled edge to edge and the window is wide enough (about 1750px) — otherwise it falls back to the position above, so the card is not always in the same place. That band is outside Google's own columns, so it sits further from the results.",
+    "description": "Explanation and trade-offs of the wide placement"
+  },
+  "placementResultsAlt": {
+    "message": "The card sits in the second row, to the right of the results",
+    "description": "Alt text of the default placement diagram"
+  },
+  "placementWideAlt": {
+    "message": "The card sits in the first row, to the right of the full-width block",
+    "description": "Alt text of the wide placement diagram"
+  }
+}

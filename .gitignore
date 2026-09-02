@@ -1,0 +1,9 @@
+node_modules/
+.output/
+.wxt/
+.DS_Store
+
+# 外部スキルは第三者の著作物なので、このリポジトリには含めない。
+# 取得元は skills-lock.json に記録してある（.claude/skills はここへの symlink）
+.agents/
+.claude/
