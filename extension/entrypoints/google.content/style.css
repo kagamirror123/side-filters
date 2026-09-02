@@ -1,0 +1,350 @@
+/*
+ * SERP 側のカード。Google のカード文法（角丸 8px・影・Arial）に揃え、拡張が居ることを意識させない。
+ * WXT が :host{all:initial !important} を先頭に入れるので、host に効かせたい値は !important で上書きする。
+ * 値は docs/DESIGN.md の実測（ダーク）と Google の既知の値（ライト、実測して直す）。
+ */
+
+:host {
+  display: block !important;
+  /* テーマは content script が body の輝度で判定して data-theme に書く。light-dark() はこれを見る */
+  color-scheme: light !important;
+}
+
+:host([data-theme="dark"]) {
+  color-scheme: dark !important;
+}
+
+/*
+ * #rhs が無いときは #rcnt の Grid に自前の列を足す。#rhs と同じ列に着地する（実測: x=958 / w=372）。
+ * 既定の stretch だと host が #center_col と同じ高さまで伸びるので、上に寄せる
+ */
+:host([data-slot="grid"]) {
+  grid-column: span 7 / -2 !important;
+  align-self: start !important;
+}
+
+/*
+ * 設定で「右上に出す」を選び、条件が揃ったときだけ使う置き場所。
+ * いちばん右の列に置き、負のマージンで全幅の枠（AI による概要など）の高さぶん引き上げる。
+ *
+ * grid-row: 1 で行を指定するのは駄目だった。Google の枠は grid-row: auto なので、
+ * こちらが 1 行目を明示的に取ると枠が 2 行目へ押し出され、ページ全体が下にずれる（実測）。
+ * 負のマージンなら行の取り合いが起きず、Google の要素にも触らずに済む。
+ * 引き上げ量は content script が実測して --wide-offset に入れる
+ */
+:host([data-slot="wide"]) {
+  grid-column: -2 / -1 !important;
+  align-self: start !important;
+  justify-self: start !important;
+  width: 372px !important;
+  margin-top: var(--wide-offset, 0px) !important;
+}
+
+.card {
+  --fg: light-dark(#1f1f1f, #e8e8e8);
+  --fg-muted: light-dark(#474747, #bdc1c6);
+  --link: light-dark(#1a0dab, #99c3ff);
+  --surface: light-dark(#fff, rgb(34 36 42));
+  --surface-hover: light-dark(#f2f2f2, rgb(48 49 52));
+  --border: light-dark(#dadce0, rgb(68 71 70));
+  /* 選択中の塗り。Google 自身が絞り込みの選択に使う青 */
+  --selected-bg: light-dark(#d3e3fd, #004a77);
+  --selected-fg: light-dark(#041e49, #c2e7ff);
+  --focus: light-dark(#1a73e8, #99c3ff);
+  --disabled: light-dark(#9aa0a6, rgb(95 99 104));
+  /* 入力欄は面より一段沈める */
+  --field: light-dark(#f8f9fa, rgb(28 30 36));
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 12px 16px 16px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: light-dark(0 1px 6px 0 rgb(32 33 36 / 0.28), 1px 1px 15px 0 rgb(23 23 23));
+  font:
+    14px/1.4 Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card ::selection {
+  background: light-dark(rgb(26 115 232 / 0.3), rgb(153 195 255 / 0.35));
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+
+/* 見出しの右。そのセクションに効くトグルと、期間だけに置く歯車が並ぶ */
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--fg-muted);
+}
+
+.section-title svg {
+  flex: none;
+}
+
+/* 歯車。24px のアイコン枠に当たり判定を足し、右端はカードの余白に食い込ませて視覚的に揃える */
+.gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -4px -8px -4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease-out;
+}
+
+.gear:hover {
+  background: var(--surface-hover);
+  color: var(--fg);
+}
+
+.gear:focus-visible,
+.option:focus-visible,
+.toggle:focus-visible,
+.token-remove:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/*
+ * 選択肢の並び。同じマークアップのまま CSS だけで 2 つの姿を取る。
+ * - track: 区切り線でつないだ 1 本のピル（既定）
+ * - grid: 3 列の格子（1 行に収まらないとき。Card.tsx が実寸で判定する）
+ * data-measuring は判定中の一瞬だけ付き、姿を必ず track に戻して実寸を測らせる
+ */
+.options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  display: inline-block;
+  box-sizing: border-box;
+  color: var(--link);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms ease-out;
+}
+
+.option:hover {
+  background: var(--surface-hover);
+}
+
+.option[aria-current="true"] {
+  background: var(--selected-bg);
+  color: var(--selected-fg);
+}
+
+/*
+ * 「全期間」「全言語」には data-all が付く。いまは他と同じ青で塗る（segmented control の作法どおり）。
+ * 「絞り込み中だけ青」にしたくなったら、ここに data-all[aria-current] だけの中立色を足せば切り替わる
+ */
+
+/* --- track --- */
+.options[data-layout="track"],
+.options[data-measuring] {
+  display: inline-flex;
+  align-self: flex-start;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.options[data-layout="track"] > li,
+.options[data-measuring] > li {
+  display: flex;
+}
+
+.options[data-layout="track"] > li + li,
+.options[data-measuring] > li + li {
+  border-left: 1px solid var(--border);
+}
+
+/* 7 区切りで 340px の列に収めるための余白。つないだ 1 本の中なので単独のチップより詰めてよい */
+.options[data-layout="track"] .option,
+.options[data-measuring] .option {
+  padding: 7px 8px;
+}
+
+/* --- grid（退避） --- */
+.options[data-layout="grid"]:not([data-measuring]) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* 列幅いっぱいに広げる。幅が揃うので、はみ出した結果の並びには見えない */
+.options[data-layout="grid"]:not([data-measuring]) .option {
+  display: block;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  text-align: center;
+}
+
+/*
+ * オンとオフだけの控え。見出しの行に入るので、選択肢のピルより一回り小さくする。
+ * リンクなので押すとページが読み込み直される（設定画面のスイッチとは別物）
+ */
+.toggle {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--link);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 120ms ease-out;
+}
+
+.toggle:hover {
+  background: var(--surface-hover);
+}
+
+.toggle[aria-pressed="true"] {
+  border-color: var(--selected-bg);
+  background: var(--selected-bg);
+  color: var(--selected-fg);
+}
+
+/* 囲むと壊れる検索語のとき。押せないことを見せたうえで、消しはしない */
+.toggle[aria-disabled="true"] {
+  color: var(--disabled);
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* 除外リスト。枠の中にチップが並び、末尾に打てる欄がある */
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--fg);
+  transition: border-color 120ms ease-out;
+}
+
+.field:focus-within {
+  border-color: var(--focus);
+  background: var(--surface);
+}
+
+.token {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 9px;
+  border-radius: 9999px;
+  background: var(--surface-hover);
+  color: var(--fg);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.token-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: var(--fg-muted);
+  text-decoration: none;
+}
+
+.token-remove:hover {
+  background: var(--surface);
+  color: var(--fg);
+}
+
+/* 枠そのものが入力欄に見えるよう、input からは枠と背景を外す */
+.field-input {
+  flex: 1;
+  min-width: 80px;
+  margin: 0;
+  padding: 3px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font:
+    12px/16px Arial,
+    sans-serif;
+}
+
+.field-input::placeholder {
+  color: var(--fg-muted);
+}
+
+.field-input:focus {
+  outline: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear,
+  .option,
+  .toggle,
+  .field {
+    transition: none;
+  }
+}
