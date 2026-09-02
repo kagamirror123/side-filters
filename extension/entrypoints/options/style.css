@@ -1,0 +1,291 @@
+/*
+ * 設定画面のレイアウトだけ。色・字送り・部品の見た目は kumo のトークンに任せる。
+ * SERP のカードと違い、ここは拡張自身のページなので OS の配色設定（data-mode）に従う。
+ */
+
+body {
+  margin: 0;
+  background: var(--color-kumo-base);
+  color: var(--text-color-kumo-default);
+}
+
+.page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+}
+
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.page-lede {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--text-color-kumo-subtle);
+  line-height: 1.6;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* スイッチが並ぶセクションは、間を詰めて 1 つのまとまりに見せる */
+.section:has(> button[role="switch"]) {
+  gap: 12px;
+}
+
+.section-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.rows-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 列見出しは 1 度だけ。行ごとの入力欄には aria-label が付く */
+.rows-head {
+  display: flex;
+  gap: 12px;
+  /* 行の操作ボタンぶんを空けて、見出しと入力欄の左端を揃える */
+  padding-right: 116px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color-kumo-subtle);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 検証メッセージが出た行だけ背が高くなるので、上端で揃える */
+.row {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.cells {
+  display: flex;
+  flex: 1;
+  align-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 列見出しが見えているあいだは、各欄の見出しは要らない */
+.cell-name {
+  display: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color-kumo-subtle);
+}
+
+/* kumo の入力欄は枠線ではなく ring（box-shadow）で縁を描くので、その色を差し替える */
+.cell[data-invalid] input {
+  --tw-ring-color: var(--color-kumo-danger);
+}
+
+.cell-error {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-color-kumo-danger);
+}
+
+/* ラベルは伸ばし、数と単位は内容ぶん。列見出しと同じ幅の指定を共有する */
+.cell-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.cell-count {
+  flex: none;
+  width: 88px;
+}
+
+.cell-unit {
+  flex: none;
+  width: 128px;
+}
+
+.cell-code {
+  flex: none;
+  width: 200px;
+}
+
+.row-actions {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+/* 補足つきの選択欄。行の中ではないので幅は単独で決める */
+.cell-theme {
+  max-width: 320px;
+}
+
+.empty {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--text-color-kumo-subtle);
+  line-height: 1.6;
+}
+
+.page-foot {
+  display: flex;
+  padding-top: 8px;
+}
+
+/* 横に並べきれない幅では、列見出しをやめて各欄に見出しを戻す */
+@media (max-width: 640px) {
+  .rows-head {
+    display: none;
+  }
+
+  .rows {
+    gap: 20px;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cells {
+    flex-wrap: wrap;
+  }
+
+  .cell-name {
+    display: block;
+  }
+
+  .row-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* カードを出す場所の選択。図と説明を並べたカード型のラジオ */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 4px 12px;
+  padding: 14px;
+  border: 1px solid var(--color-kumo-line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.choice:hover {
+  background: var(--color-kumo-fill);
+}
+
+.choice:has(input:checked) {
+  border-color: var(--color-kumo-brand);
+  background: var(--color-kumo-tint);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-kumo-focus);
+  outline-offset: 2px;
+}
+
+.choice input {
+  grid-row: 1;
+  margin: 2px 0 0;
+  accent-color: var(--color-kumo-brand);
+}
+
+.diagram {
+  grid-column: 2;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+}
+
+/*
+ * 図の形は currentColor で描く。kumo の面のトークンはライトとダークで明度が反転するため、
+ * どちらでも文字色に対する濃さが変わらない描き方にしている
+ */
+
+/* 1 行目を全幅で占める枠（AI による概要など）。囲みだと分かるように線だけで描く */
+.d-block {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.28;
+}
+
+.d-content {
+  fill: currentColor;
+  fill-opacity: 0.16;
+}
+
+.d-card {
+  fill: var(--color-kumo-brand);
+}
+
+.choice-text {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.choice-title {
+  font-weight: 600;
+}
+
+.choice-detail {
+  color: var(--text-color-kumo-subtle);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

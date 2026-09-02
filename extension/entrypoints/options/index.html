@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- data-theme は kumo の配色トークンの入口。ダークは main.tsx が body に data-mode="dark" を付けて切り替える -->
+<html data-theme="kumo">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- options_ui.open_in_tab は wxt.config.ts では効かないので、ここに書く（docs/DESIGN.md） -->
+    <meta name="manifest.open_in_tab" content="true" />
+    <title>Side Filters</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
