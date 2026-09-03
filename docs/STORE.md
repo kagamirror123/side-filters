@@ -123,3 +123,130 @@ site the content script runs on.
 
 小さいプロモタイル 440×280 は任意だが、あると一覧での見え方がよくなる。
 `assets/icon.svg` の図案を流用して作れる。
+
+---
+
+# 初回の申請手順
+
+## 1. 開発者登録（1 回だけ・$5）
+
+1. [Chrome ウェブストア デベロッパー ダッシュボード](https://chrome.google.com/webstore/devconsole) を開く
+2. **拡張を所有させたい Google アカウント**でログインする。あとから移すのは手間なので、ここで決める
+3. 登録料 **$5**（1 回きり、拡張ごとではない）を支払う
+4. 公開元の表示名を決める。ストアの「提供元」に出る
+5. アカウントに 2 段階認証を求められることがある。先に有効にしておくと詰まらない
+
+## 2. パッケージを作る
+
+```bash
+task zip
+```
+
+`.output/side-filters-<version>-chrome.zip` ができる。バージョンは `package.json` の `version` がそのまま manifest に入る。
+
+## 3. アイテムを作る
+
+1. ダッシュボードで「新しいアイテム」→ 手順 2 の zip をアップロード
+2. アップロードが通るとアイテム ID が発行される。**この ID を控える**（CI で自動化するときに使う）
+
+## 4. ストアの掲載情報
+
+このファイルの上半分から貼る。
+
+| 欄                 | 内容                                |
+| ------------------ | ----------------------------------- |
+| 名前               | Side Filters for Google Search      |
+| 概要               | 「概要（132 文字以内）」の節        |
+| 説明               | 「詳細説明」の節                    |
+| カテゴリ           | Tools                               |
+| 言語               | English（既定）／ 日本語            |
+| スクリーンショット | `assets/store/` の 4 枚（1280×800） |
+| アイコン           | manifest の 128px が自動で使われる  |
+
+## 5. プライバシー
+
+| 欄                   | 内容                                         |
+| -------------------- | -------------------------------------------- |
+| 単一目的             | 「単一目的の説明」の節                       |
+| 権限の理由           | 「権限の理由」の節（`storage` とホスト権限） |
+| データ利用の申告     | 「プライバシーへの取り組み」の節             |
+| プライバシーポリシー | PRIVACY.md の URL                            |
+
+## 6. 配布
+
+無料 / 公開 / 地域は全世界。
+
+## 7. 審査に出す
+
+「審査のために送信」を押す。審査は数日が目安。権限が `storage` とホスト 1 つだけなので重い部類ではない。
+通ればストアに出る。
+
+---
+
+# 2 回目以降のリリース
+
+## 手でやる場合
+
+1. `package.json` の `version` を上げる（**同じバージョンは再アップロードできない**）
+2. `task zip`
+3. ダッシュボードの「パッケージ」タブから新しい zip をアップロード
+4. 「審査のために送信」
+
+掲載情報やスクリーンショットを変えないなら、触るのはパッケージだけでよい。
+
+## CI で自動化する場合
+
+`wxt submit`（[publish-browser-extension](https://github.com/aklinker1/publish-browser-extension)）が最初から入っているので、
+タグを打つだけで審査に出すところまで自動化できる。
+
+**できること / できないこと**
+
+- できる: zip のアップロードと審査への提出、段階的公開（`--chrome-deploy-percentage`）
+- **できない**: 掲載情報（説明文・スクリーンショット・カテゴリ）の更新。これは常にダッシュボードで手作業
+- 審査は自動化しても省けない。「送信までが自動」であって「即公開」ではない
+
+**準備**
+
+1. **初回の申請は手でやる**。アイテム ID が要るのと、掲載情報は API で入れられないため
+2. Google Cloud でプロジェクトを作り、**Chrome Web Store API** を有効化する
+3. サービスアカウントを作り、鍵（クライアントのメールアドレスと秘密鍵）を発行する
+   ※ Chrome Web Store API は v2 でサービスアカウント方式になった。旧 v1.1 のリフレッシュトークン方式は非推奨
+4. ダッシュボードでそのサービスアカウントに、このアイテムへのアクセスを与える
+5. GitHub の Secrets に入れる
+
+   | Secret 名                      | 中身                       |
+   | ------------------------------ | -------------------------- |
+   | `CHROME_EXTENSION_ID`          | 手順 3 で控えたアイテム ID |
+   | `CHROME_SERVICE_ACCOUNT_EMAIL` | サービスアカウントのメール |
+   | `CHROME_SERVICE_ACCOUNT_KEY`   | サービスアカウントの秘密鍵 |
+
+6. `npx wxt submit init` で対話的に設定を作れる。手元で `--dry-run` を付けて認証だけ確かめられる
+
+**CI に足すジョブ**
+
+いまの `.github/workflows/ci.yml` は `v*` タグで zip を artifact にするところまでやっている。
+その後ろに提出を足す形になる。
+
+```yaml
+submit:
+  needs: check
+  if: startsWith(github.ref, 'refs/tags/v')
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v6
+    - uses: jdx/mise-action@v3
+    - run: npm ci
+    - run: npm run zip
+    - run: >
+        npx wxt submit
+        --chrome-zip .output/*-chrome.zip
+        --chrome-extension-id "$CHROME_EXTENSION_ID"
+        --chrome-service-account-client-email "$CHROME_SERVICE_ACCOUNT_EMAIL"
+        --chrome-service-account-private-key "$CHROME_SERVICE_ACCOUNT_KEY"
+      env:
+        CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+        CHROME_SERVICE_ACCOUNT_EMAIL: ${{ secrets.CHROME_SERVICE_ACCOUNT_EMAIL }}
+        CHROME_SERVICE_ACCOUNT_KEY: ${{ secrets.CHROME_SERVICE_ACCOUNT_KEY }}
+```
+
+リリースの流れは「`version` を上げてコミット → `git tag v1.0.1` → push」だけになる。
