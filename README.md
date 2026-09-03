@@ -3,7 +3,7 @@
 Google 検索結果の右カラムに、期間と言語で絞り込むチップを出す Chrome 拡張。
 ストア掲載名は Side Filters for Google Search。
 
-> 現状: 実装は一通り完了。残るはストアのスクリーンショットと、ライトテーマの配色の実測。
+> 現状: 実装とストア素材は完了。あとは Chrome ウェブストアへの申請だけ。
 
 ## なにをするツールか
 
@@ -105,12 +105,9 @@ UI の設計と磨き込みには vpn-on-demand と同じ外部スキルを使�
 2. ~~content script: `#rhs` / Grid への配置とテーマ判定~~
 3. ~~カードの UI と CSS（連結ピル・全期間の区切り・格子への退避）~~
 4. ~~設定画面（`entrypoints/options/`、kumo + phosphor）~~
-5. ~~アイコン（`assets/icon.svg`）~~ とストア用の説明（[docs/STORE.md](docs/STORE.md)）
+5. ~~アイコン（`assets/icon.svg`）とストア素材（[docs/STORE.md](docs/STORE.md)、`assets/store/`）~~
 
-残っている作業:
-
-- ストアのスクリーンショット（1280×800、[docs/STORE.md](docs/STORE.md) に撮る場面のリスト）
-- ライトテーマの配色は Google の既知の値を仮置きしているので、ライトで実測して直す
+残っているのは Chrome ウェブストアへの申請だけ。
 
 ## ドキュメント
 

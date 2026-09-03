@@ -42,11 +42,11 @@
 
 .card {
   --fg: light-dark(#1f1f1f, #e8e8e8);
-  --fg-muted: light-dark(#474747, #bdc1c6);
+  --fg-muted: light-dark(#4d5156, #bdc1c6);
   --link: light-dark(#1a0dab, #99c3ff);
   --surface: light-dark(#fff, rgb(34 36 42));
   --surface-hover: light-dark(#f2f2f2, rgb(48 49 52));
-  --border: light-dark(#dadce0, rgb(68 71 70));
+  --border: light-dark(#d2d2d2, rgb(68 71 70));
   /* 選択中の塗り。Google 自身が絞り込みの選択に使う青 */
   --selected-bg: light-dark(#d3e3fd, #004a77);
   --selected-fg: light-dark(#041e49, #c2e7ff);
@@ -64,7 +64,12 @@
   border-radius: 8px;
   background: var(--surface);
   color: var(--fg);
-  box-shadow: light-dark(0 1px 6px 0 rgb(32 33 36 / 0.28), 1px 1px 15px 0 rgb(23 23 23));
+  /*
+   * ライトの SERP は面に影を使わず 1px の境界で区切る（2026-09-03 実測。
+   * ナレッジパネルも AI 概要の引用元カードも box-shadow: none、境界は #d2d2d2）。
+   * ダークは持ち上げた面なので影のまま。spread 1px の影で描くと箱の寸法が変わらない
+   */
+  box-shadow: light-dark(0 0 0 1px #d2d2d2, 1px 1px 15px 0 rgb(23 23 23));
   font:
     14px/1.4 Arial,
     sans-serif;
