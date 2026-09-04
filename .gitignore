@@ -7,3 +7,7 @@ node_modules/
 # 取得元は skills-lock.json に記録してある（.claude/skills はここへの symlink）
 .agents/
 .claude/
+
+# wxt submit init が作る、Chrome ウェブストアのサービスアカウント鍵入りの設定
+.env.submit
+.env*.local

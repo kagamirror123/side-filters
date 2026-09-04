@@ -3,31 +3,50 @@ name: CI
 on:
   push:
     branches: [main]
+    # zip を作る release ジョブはタグ push から始まる。ここに tags が無いと到達しない
+    tags: ["v*"]
   pull_request:
+
+# 既定を読み取りだけにする。書き込みが要るジョブでだけ足す
+permissions:
+  contents: read
+
+# third-party Action は可変タグではなく commit SHA で固定する（横のコメントが元のバージョン）
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v3
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
       - run: npm ci
       - run: npm run lint
       - run: npm run fmt:check
       - run: npm run typecheck
-      - run: npm run test
+      # manifest のテストが production build の出力を読むので、test より前に build する
       - run: npm run build
+      - run: npm run test
 
-  zip:
+  release:
     needs: check
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v3
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
       - run: npm ci
+      # 同じバージョンは Chrome ウェブストアへ再アップロードできない。取り違えをここで落とす
+      - name: tag と package.json の version が一致するか
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME} と package.json の version ${pkg} が一致しません"
+            exit 1
+          fi
       - run: npm run zip
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
-          name: side-filters
+          name: side-filters-${{ github.ref_name }}
           path: .output/*.zip
+          if-no-files-found: error
