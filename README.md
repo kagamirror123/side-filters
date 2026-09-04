@@ -1,9 +1,11 @@
 # Side Filters
 
-Google 検索結果の右カラムに、期間と言語で絞り込むチップを出す Chrome 拡張。
+Google 検索結果の右カラムに、期間・言語・検索語で絞り込むチップを出す Chrome 拡張。
 ストア掲載名は Side Filters for Google Search。
 
-> 現状: 実装とストア素材は完了。あとは Chrome ウェブストアへの申請だけ。
+> 現状: 実装・テスト・ストア素材は揃っている。次は Chrome ウェブストアへの初回申請（手作業）。
+> 2026-09-04 のレビュー（[docs/REVIEW.md](docs/REVIEW.md)）で挙がった P1・P2 は対応済み。
+> タグ push からの release だけは、実際にタグを打つまで動作を確認できていない。
 
 ## なにをするツールか
 
@@ -12,6 +14,16 @@ Google 検索結果の右カラムに、期間と言語で絞り込むチップ�
 - 期間・言語は URL の `tbs` / `lr` を差し替えるだけ。検索語や他の条件はそのまま残る
 - 検索語まわりも同じカードから触れる。完全一致（同義語展開なし）、フレーズ（引用符で囲む）、除外リスト
 - データ収集も外部通信もしない（[PRIVACY.md](PRIVACY.md)）
+- Google が「期間を指定」で絞っているときは、どの控えも選択中にせず「期間を指定中」とだけ示す
+- 検索結果に重なる・幅が潰れると分かったときは、無理に出さずに引っ込む
+
+## 狙いと非目標
+
+Google の空いている右列に、よく使う絞り込みだけを、Google に馴染む小さなカードとして置く。
+検索履歴を集めず、外部通信をせず、操作は普通のリンクのまま。
+
+多目的な SERP ツールボックス、SEO スイート、検索履歴の管理にはしない。
+機能数で競わず、静かさ・一貫性・壊れにくさを優先する（[docs/DESIGN.md](docs/DESIGN.md)）。
 
 # 使う人向け
 
@@ -46,12 +58,17 @@ extension/
   entrypoints/
     google.content/       検索結果ページに入る content script・カード（React）・自前 CSS
     background.ts         歯車から設定画面を開くためだけの service worker
-    options/              設定画面（kumo + phosphor、タブで開く）
-  lib/                    URL 組み立て・検索語の解析・設定・テーマ判定・配置（vitest で固める）
+    options/              設定画面（kumo + phosphor、タブで開く）と自動保存
+  lib/                    URL 組み立て・検索語の解析・設定・テーマ判定・配置・ライフサイクル
   public/_locales/        表示文言（en / ja）
-docs/DESIGN.md            設計判断と却下した案
-docs/STORE.md             Chrome ウェブストアの掲載内容
   public/icon/            アイコン（assets/icon.svg から生成）
+  testing/                テスト用の共通設定（表示文言の差し替え）
+  manifest.test.ts        配布物の manifest を固定する
+  a11y.test.tsx           カードと設定画面に axe をかける
+docs/DESIGN.md            設計判断と却下した案・実測値・性能計測
+docs/STORE.md             ストア掲載内容・申請手順・運用（runbook）
+docs/REVIEW.md            2026-09-04 の総合レビューと、その後の対応
+assets/store/             ストアのスクリーンショット（1280×800）
 scripts/make-icons.sh     assets/icon.svg から PNG アイコンを作り直す
 ```
 
@@ -70,7 +87,7 @@ task setup
 | ------------ | ------------------------------------------- |
 | `task dev`   | 変更を監視してビルド                        |
 | `task build` | `.output/chrome-mv3` へビルド               |
-| `task check` | lint・整形・型・テスト・ビルド（CI と同じ） |
+| `task check` | lint・整形・型・ビルド・テスト（CI と同じ） |
 | `task fix`   | lint と整形の自動修正                       |
 | `task zip`   | ストアに上げる zip                          |
 | `task icons` | アイコンの PNG を作り直す                   |
@@ -83,6 +100,10 @@ task setup
 - Google のページ構造に依存するのは `#rcnt` / `#center_col` / `#rhs` の 3 つの id だけ。見つからなければ何も描かない
 - 文言は `_locales` に置き、コードに直書きしない
 - lint / 整形は oxlint / oxfmt、テストは vitest。`task check` が CI と同じ内容
+- **build は test より前**に走らせる。`extension/manifest.test.ts` が production build の出力を読むため
+- テストは純関数・カード・設定画面・ライフサイクル・配布物 manifest・アクセシビリティの 6 層
+  （内訳は [docs/DESIGN.md](docs/DESIGN.md) のテストの節）
+- 公開前の手動確認と、壊れたときの調べ方は [docs/STORE.md](docs/STORE.md) の運用の節
 - コミットメッセージは日本語。Co-Authored-By は付けない
 
 UI の設計と磨き込みには vpn-on-demand と同じ外部スキルを使う。
@@ -99,17 +120,21 @@ UI の設計と磨き込みには vpn-on-demand と同じ外部スキルを使�
 
 ## いまの状態と進め方
 
-1〜4 まで実装済み。`task check` は通る。
+`task check` は通る。
 
 1. ~~`lib/`: URL 組み立て（`tbs` / `lr` の差し替え）と選択中チップの判定、設定の読み書き。vitest で固める~~
 2. ~~content script: `#rhs` / Grid への配置とテーマ判定~~
 3. ~~カードの UI と CSS（連結ピル・全期間の区切り・格子への退避）~~
 4. ~~設定画面（`entrypoints/options/`、kumo + phosphor）~~
 5. ~~アイコン（`assets/icon.svg`）とストア素材（[docs/STORE.md](docs/STORE.md)、`assets/store/`）~~
+6. ~~2026-09-04 のレビュー対応（期間の三状態・配置のライフサイクル・保存の契約・アクセシビリティ・CI とストア文言）~~
 
-残っているのは Chrome ウェブストアへの申請だけ。
+残っているのは Chrome ウェブストアへの初回申請（手作業）。
+タグ push で release job が走ることは workflow 上そう書いてあるだけで、実際のタグではまだ確認していない。
 
 ## ドキュメント
 
-- [設計判断と却下した案](docs/DESIGN.md)
+- [設計判断と却下した案](docs/DESIGN.md) — 実測値、性能計測、テストの層
+- [ストア掲載内容・申請手順・運用](docs/STORE.md) — リリース前チェック、manual matrix、ロールバック
+- [総合レビュー（2026-09-04）と対応](docs/REVIEW.md)
 - [プライバシーポリシー](PRIVACY.md)
