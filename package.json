@@ -2,7 +2,7 @@
   "name": "side-filters",
   "version": "0.1.0",
   "private": true,
-  "description": "Google 検索結果の右カラムに期間・言語の絞り込みチップを出す Chrome 拡張",
+  "description": "Google 検索結果の右カラムに期間・言語・検索語の絞り込みチップを出す Chrome 拡張",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -23,9 +23,12 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "@wxt-dev/module-react": "^1.2.2",
+    "axe-core": "^4.13.0",
     "happy-dom": "^20.13.1",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",

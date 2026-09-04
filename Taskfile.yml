@@ -28,8 +28,9 @@ tasks:
       - npm run lint
       - npm run fmt:check
       - npm run typecheck
-      - npm run test
+      # manifest のテストが production build の出力を読むので、test より前に build する
       - task: build
+      - npm run test
 
   fix:
     desc: lint と整形の自動修正をかける
