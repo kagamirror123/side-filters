@@ -48,22 +48,52 @@ function keyOf(part: string): string {
   return colon === -1 ? part : part.slice(0, colon);
 }
 
-/** 現在 URL の期間コード。指定なし・カスタム期間（cdr）なら null */
-export function getQdr(url: string): Qdr | null {
-  const tbs = new URL(url).searchParams.get("tbs");
-  for (const part of splitTbs(tbs)) {
-    if (part.startsWith("qdr:")) {
-      const value = part.slice("qdr:".length);
-      return value === "" ? null : value;
-    }
+/**
+ * 現在 URL が表している期間。
+ * Google 側の「期間を指定」（tbs=cdr:1,cd_min:...,cd_max:...）は qdr と排他なので、
+ * 「指定なし」と混ぜずに custom として区別する。混ぜると絞り込み中でも「全期間」が選択中になる
+ */
+export type Period =
+  | { kind: "none" }
+  | { kind: "preset"; qdr: Qdr }
+  | { kind: "custom"; min: string | null; max: string | null };
+
+const NONE: Period = { kind: "none" };
+
+function partValue(part: string, key: string): string | null {
+  return part.startsWith(`${key}:`) ? part.slice(key.length + 1) : null;
+}
+
+export function getPeriod(url: string): Period {
+  const parts = splitTbs(new URL(url).searchParams.get("tbs"));
+  let custom = false;
+  let min: string | null = null;
+  let max: string | null = null;
+
+  for (const part of parts) {
+    const qdr = partValue(part, "qdr");
+    // qdr は cdr より優先する。両方は同時に立たないが、立っていれば選択中の控えを示せる方を採る
+    if (qdr !== null && qdr !== "") return { kind: "preset", qdr };
+    if (partValue(part, "cdr") === "1") custom = true;
+    min = partValue(part, "cd_min") ?? min;
+    max = partValue(part, "cd_max") ?? max;
   }
-  return null;
+
+  if (custom || min !== null || max !== null) return { kind: "custom", min, max };
+  return NONE;
 }
 
 /** 現在 URL の言語コード（lang_ja など）。指定なしなら null */
 export function getLr(url: string): string | null {
   const lr = new URL(url).searchParams.get("lr");
   return lr ? lr : null;
+}
+
+/** Google の言語コード（lang_ja / lang_zh-CN など）か。設定画面と正規化で同じ判定を使う */
+const LANG_CODE_PATTERN = /^lang_[a-zA-Z]{2,3}(?:-[a-zA-Z]{2,4})?$/;
+
+export function isValidLangCode(value: string): boolean {
+  return LANG_CODE_PATTERN.test(value);
 }
 
 function finish(u: URL): string {

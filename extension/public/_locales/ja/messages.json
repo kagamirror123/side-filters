@@ -4,7 +4,7 @@
     "description": "ストアと chrome://extensions に出る拡張名"
   },
   "extDescription": {
-    "message": "Google 検索結果の横に、期間と言語で絞り込むチップをワンクリックで出します。",
+    "message": "Google 検索結果の横に、期間・言語・検索語の絞り込みをワンクリックで出します。",
     "description": "ストアと chrome://extensions に出る短い説明"
   },
   "cardLabel": {
@@ -132,11 +132,11 @@
     "description": "言語コードの形式が違うときの検証メッセージ"
   },
   "optionsEmptyTerms": {
-    "message": "期間のプリセットがありません。追加するまではカードに既定のプリセットが出ます。",
+    "message": "期間のプリセットがありません。カードには「全期間」だけが出ます。",
     "description": "期間プリセットが空のときの表示"
   },
   "optionsEmptyLangs": {
-    "message": "言語のプリセットがありません。追加するまではカードに既定のプリセットが出ます。",
+    "message": "言語のプリセットがありません。カードには「全言語」だけが出ます。",
     "description": "言語プリセットが空のときの表示"
   },
   "unitHour": {
@@ -212,8 +212,14 @@
     "description": "カードの除外欄のプレースホルダ"
   },
   "exclusionRemove": {
-    "message": "除外から外す",
-    "description": "除外チップの × の読み上げ名"
+    "message": "「$WORD$」を除外から外す",
+    "description": "除外チップの × の読み上げ名。$WORD$ は除外している語",
+    "placeholders": {
+      "word": {
+        "content": "$1",
+        "example": "linkedin"
+      }
+    }
   },
   "optionsShowQuery": {
     "message": "検索語のセクションを表示する",
@@ -266,5 +272,69 @@
   "placementWideAlt": {
     "message": "カードが 1 行目、全幅の枠の右に出る図",
     "description": "右上に出す場合の図の代替テキスト"
+  },
+  "termCustom": {
+    "message": "Google で期間を指定中",
+    "description": "Shown under the time options when the URL carries Google's own custom date range"
+  },
+  "termCustomDates": {
+    "message": "Google で期間を指定中: $DATES$",
+    "description": "Same as termCustom, with the range from the URL",
+    "placeholders": {
+      "dates": {
+        "content": "$1",
+        "example": "8/1/2026 – 8/31/2026"
+      }
+    }
+  },
+  "exclusionErrorQuote": {
+    "message": "引用符は使えません。空白を含む語は自動で囲みます。",
+    "description": "Validation error shown under the exclusion field"
+  },
+  "exclusionErrorDuplicate": {
+    "message": "その語はすでに除外しています。",
+    "description": "Validation error shown when the same exclusion is entered twice"
+  },
+  "optionsSaving": {
+    "message": "保存中…",
+    "description": "Save status on the settings page"
+  },
+  "optionsSaved": {
+    "message": "保存しました",
+    "description": "Save status on the settings page"
+  },
+  "optionsSaveFailed": {
+    "message": "保存できませんでした。変更はこの画面に残っています。",
+    "description": "Save error on the settings page"
+  },
+  "optionsSaveRetry": {
+    "message": "もう一度保存",
+    "description": "Button that retries a failed save"
+  },
+  "optionsSavedWithErrors": {
+    "message": "保存しました。エラーのある行は除いています。",
+    "description": "Save status when some rows failed validation and were not stored"
+  },
+  "optionsErrorDuplicateTerm": {
+    "message": "同じ長さのプリセットがすでにあります",
+    "description": "Validation error for two time presets with the same qdr value"
+  },
+  "optionsErrorDuplicateLang": {
+    "message": "同じコードのプリセットがすでにあります",
+    "description": "Validation error for two language presets with the same code"
+  },
+  "optionsRemoveNamed": {
+    "message": "「$LABEL$」を削除",
+    "description": "Accessible name of the delete-row button, including the row's label",
+    "placeholders": {
+      "label": {
+        "content": "$1",
+        "example": "Week"
+      }
+    }
+  },
+  "optionsSaveStatusLabel": {
+    "message": "保存の状態",
+    "description": "Accessible name of the live region that announces the save status"
   }
 }

@@ -1,18 +1,20 @@
-import { useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { browser } from "wxt/browser";
 import { OPEN_OPTIONS } from "@/lib/messages";
 import {
   addExclusion,
+  checkExclusion,
   getExclusions,
   isPhrase,
   phraseAvailability,
   removeExclusion,
   setPhrase,
+  type ExclusionProblem,
 } from "@/lib/query";
 import type { Settings } from "@/lib/settings";
 import {
   getLr,
-  getQdr,
+  getPeriod,
   getQuery,
   hasTbsFlag,
   isNewsPage,
@@ -30,7 +32,7 @@ interface CardProps {
 }
 
 interface Item {
-  /** React の key に使う。期間は qdr、言語は lr */
+  /** React の key に使う。期間は qdr、言語は lr。設定の正規化が重複を落とすので一意になる */
   id: string;
   label: string;
   href: string;
@@ -70,29 +72,39 @@ function Section({
   );
 }
 
-/** オンとオフだけの控え。押すと URL が変わってページが読み込み直される */
+/**
+ * オンとオフだけの控え。押すと URL が変わってページが読み込み直される。
+ * リンクなので aria-pressed（button 用）は使わず、いまの状態は aria-current で示す。
+ * 説明と「使えない理由」は title だけに置かず、必ず aria-describedby でも結び付ける
+ */
 function Toggle({
   label,
   href,
   on,
-  title,
+  help,
 }: {
   label: string;
   href?: string;
   on: boolean;
-  title?: string;
+  help: string;
 }) {
-  if (!href) {
-    return (
-      <span className="toggle" aria-disabled="true" title={title}>
-        {label}
-      </span>
-    );
-  }
+  const helpId = `${useId()}-help`;
+  const shared = { className: "toggle", title: help, "aria-describedby": helpId };
   return (
-    <a className="toggle" href={href} aria-pressed={on} title={title}>
-      {label}
-    </a>
+    <>
+      {href ? (
+        <a {...shared} href={href} aria-current={on ? "true" : undefined}>
+          {label}
+        </a>
+      ) : (
+        <span {...shared} aria-disabled="true">
+          {label}
+        </span>
+      )}
+      <span className="sr-only" id={helpId}>
+        {help}
+      </span>
+    </>
   );
 }
 
@@ -153,42 +165,72 @@ function OptionList({ all, items }: { all: Item; items: Item[] }) {
 /** 除外リスト。チップは q の -語 トークンをそのまま映したもの */
 function ExclusionField({ url }: { url: string }) {
   const [draft, setDraft] = useState("");
+  const [problem, setProblem] = useState<ExclusionProblem | null>(null);
+  const id = useId();
+  const errorId = `${id}-error`;
+  const helpId = `${id}-help`;
   const query = getQuery(url);
   const words = getExclusions(query);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const next = addExclusion(query, draft);
-    if (next === query) {
+    const issue = checkExclusion(query, draft);
+    if (issue === "empty") {
       setDraft("");
+      setProblem(null);
       return;
     }
-    go(withQuery(url, next));
+    if (issue !== null) {
+      setProblem(issue);
+      return;
+    }
+    go(withQuery(url, addExclusion(query, draft)));
   };
 
+  const message = problem === "quote" ? t("exclusionErrorQuote") : t("exclusionErrorDuplicate");
+
   return (
-    <form className="field" onSubmit={submit} title={t("exclusionHelp")}>
-      {words.map((word) => (
-        <span className="token" key={word}>
-          {word}
-          <a
-            className="token-remove"
-            href={withQuery(url, removeExclusion(query, word))}
-            title={t("exclusionRemove")}
-          >
-            {X}
-            <span className="sr-only">{t("exclusionRemove")}</span>
-          </a>
-        </span>
-      ))}
-      <input
-        className="field-input"
-        type="text"
-        value={draft}
-        placeholder={words.length === 0 ? t("exclusionPlaceholder") : ""}
-        aria-label={t("exclusionPlaceholder")}
-        onChange={(event) => setDraft(event.target.value)}
-      />
+    <form className="exclusions" onSubmit={submit}>
+      <div className="field">
+        {words.map((word) => (
+          <span className="token" key={word}>
+            {word}
+            <a
+              className="token-remove"
+              href={withQuery(url, removeExclusion(query, word))}
+              title={t("exclusionRemove", word)}
+            >
+              {X}
+              <span className="sr-only">{t("exclusionRemove", word)}</span>
+            </a>
+          </span>
+        ))}
+        <input
+          className="field-input"
+          type="text"
+          // 除外語は個人情報ではないので候補も綴り確認も出さない
+          autoComplete="off"
+          spellCheck={false}
+          value={draft}
+          placeholder={words.length === 0 ? t("exclusionPlaceholder") : ""}
+          aria-label={t("exclusionPlaceholder")}
+          aria-describedby={problem === null ? helpId : `${errorId} ${helpId}`}
+          aria-invalid={problem === null ? undefined : true}
+          title={t("exclusionHelp")}
+          onChange={(event) => {
+            setDraft(event.target.value);
+            setProblem(null);
+          }}
+        />
+      </div>
+      <span className="sr-only" id={helpId}>
+        {t("exclusionHelp")}
+      </span>
+      {problem === null ? null : (
+        <p className="field-error" id={errorId} role="alert">
+          {message}
+        </p>
+      )}
     </form>
   );
 }
@@ -200,7 +242,7 @@ function openSettings() {
 /* ------------------------------------------------------------------ カード */
 
 export function Card({ url, settings }: CardProps) {
-  const qdr = getQdr(url);
+  const period = getPeriod(url);
   const lr = getLr(url);
   const query = getQuery(url);
 
@@ -229,7 +271,7 @@ export function Card({ url, settings }: CardProps) {
                 label={t("toggleSortByDate")}
                 href={withTbsFlag(url, "sbd", !byDate)}
                 on={byDate}
-                title={t("toggleSortByDateHelp")}
+                help={t("toggleSortByDateHelp")}
               />
             ) : null}
             <button type="button" className="gear" onClick={openSettings} title={t("openSettings")}>
@@ -240,14 +282,21 @@ export function Card({ url, settings }: CardProps) {
         }
       >
         <OptionList
-          all={{ id: "all", label: t("termAll"), href: withQdr(url, null), selected: qdr === null }}
+          all={{
+            id: "all",
+            label: t("termAll"),
+            href: withQdr(url, null),
+            // Google 側で期間を指定しているときは、どの控えも選択中にしない（「全期間」も含む）
+            selected: period.kind === "none",
+          }}
           items={settings.terms.map((term) => ({
             id: term.qdr,
             label: term.label,
             href: withQdr(url, term.qdr),
-            selected: qdr === term.qdr,
+            selected: period.kind === "preset" && period.qdr === term.qdr,
           }))}
         />
+        {period.kind === "custom" ? <CustomPeriodNote min={period.min} max={period.max} /> : null}
       </Section>
 
       {settings.showLangs ? (
@@ -274,13 +323,13 @@ export function Card({ url, settings }: CardProps) {
                 label={t("toggleVerbatim")}
                 href={withTbsFlag(url, "li", !verbatim)}
                 on={verbatim}
-                title={t("toggleVerbatimHelp")}
+                help={t("toggleVerbatimHelp")}
               />
               <Toggle
                 label={t("togglePhrase")}
                 href={phraseState === "ok" ? withQuery(url, setPhrase(query, !phrase)) : undefined}
                 on={phrase}
-                title={phraseHelp}
+                help={phraseHelp}
               />
             </>
           }
@@ -290,4 +339,13 @@ export function Card({ url, settings }: CardProps) {
       ) : null}
     </section>
   );
+}
+
+/**
+ * Google の「期間を指定」が効いているときの表示。
+ * 独自の日付 picker は持たないので、いまの絞り込みを言葉で示すだけにする。解除は「全期間」でできる
+ */
+function CustomPeriodNote({ min, max }: { min: string | null; max: string | null }) {
+  const dates = [min, max].filter((value) => value !== null).join(" – ");
+  return <p className="note">{dates === "" ? t("termCustom") : t("termCustomDates", dates)}</p>;
 }

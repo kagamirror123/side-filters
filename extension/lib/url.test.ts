@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   formatQdr,
   getLr,
-  getQdr,
+  getPeriod,
   getQuery,
   hasTbsFlag,
   isFilterablePage,
   isNewsPage,
+  isValidLangCode,
   isValidQdr,
   parseQdr,
   withLr,
@@ -31,20 +32,52 @@ describe("isValidQdr", () => {
   });
 });
 
-describe("getQdr", () => {
-  it("tbs が無ければ null", () => {
-    expect(getQdr(BASE)).toBeNull();
+describe("getPeriod", () => {
+  it("tbs が無ければ指定なし", () => {
+    expect(getPeriod(BASE)).toEqual({ kind: "none" });
+    expect(getPeriod(`${BASE}&tbs=li:1`)).toEqual({ kind: "none" });
+    expect(getPeriod(`${BASE}&tbs=qdr:`)).toEqual({ kind: "none" });
   });
   it("qdr を取り出す", () => {
-    expect(getQdr(`${BASE}&tbs=qdr:w`)).toBe("w");
-    expect(getQdr(`${BASE}&tbs=qdr:m6`)).toBe("m6");
+    expect(getPeriod(`${BASE}&tbs=qdr:w`)).toEqual({ kind: "preset", qdr: "w" });
+    expect(getPeriod(`${BASE}&tbs=qdr:m6`)).toEqual({ kind: "preset", qdr: "m6" });
   });
   it("他の tbs 部分に混ざっていても取り出す", () => {
-    expect(getQdr(`${BASE}&tbs=sbd:1,qdr:d`)).toBe("d");
-    expect(getQdr(`${BASE}&tbs=qdr:y,li:1`)).toBe("y");
+    expect(getPeriod(`${BASE}&tbs=sbd:1,qdr:d`)).toEqual({ kind: "preset", qdr: "d" });
+    expect(getPeriod(`${BASE}&tbs=qdr:y,li:1`)).toEqual({ kind: "preset", qdr: "y" });
   });
-  it("カスタム期間（cdr）は null", () => {
-    expect(getQdr(`${BASE}&tbs=cdr:1,cd_min:1/1/2024,cd_max:12/31/2024`)).toBeNull();
+  it("カスタム期間（cdr）は指定なしと区別する", () => {
+    expect(getPeriod(`${BASE}&tbs=cdr:1,cd_min:8/1/2026,cd_max:8/31/2026`)).toEqual({
+      kind: "custom",
+      min: "8/1/2026",
+      max: "8/31/2026",
+    });
+  });
+  it("片側だけのカスタム期間も custom", () => {
+    expect(getPeriod(`${BASE}&tbs=cdr:1,cd_min:8/1/2026`)).toEqual({
+      kind: "custom",
+      min: "8/1/2026",
+      max: null,
+    });
+    expect(getPeriod(`${BASE}&tbs=cd_max:8/31/2026`)).toEqual({
+      kind: "custom",
+      min: null,
+      max: "8/31/2026",
+    });
+  });
+  it("未知の qdr でも preset として返す（カードでは何も選択中にしない）", () => {
+    expect(getPeriod(`${BASE}&tbs=qdr:zz9`)).toEqual({ kind: "preset", qdr: "zz9" });
+  });
+});
+
+describe("isValidLangCode", () => {
+  it("Google の言語コードを通す", () => {
+    for (const v of ["lang_ja", "lang_en", "lang_zh-CN", "lang_zh-TW", "lang_fil"])
+      expect(isValidLangCode(v)).toBe(true);
+  });
+  it("それ以外は弾く", () => {
+    for (const v of ["", "ja", "lang_", "lang_j", "lang_japanese", "lang ja"])
+      expect(isValidLangCode(v)).toBe(false);
   });
 });
 

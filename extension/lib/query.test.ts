@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   addExclusion,
+  checkExclusion,
   canPhrase,
   phraseAvailability,
   getExclusions,
@@ -67,8 +68,9 @@ describe("addExclusion", () => {
   it("空白を含む語は引用符で囲む", () => {
     expect(addExclusion("java", "machine learning")).toBe('java -"machine learning"');
   });
-  it("すでに引用符が付いていればそのまま", () => {
-    expect(addExclusion("java", '"machine learning"')).toBe('java -"machine learning"');
+  it("引用符を含む入力は受け付けない（壊れた query を作らない）", () => {
+    expect(addExclusion("java", '"machine learning"')).toBe("java");
+    expect(addExclusion("java", 'foo "bar"')).toBe("java");
   });
   it("打たれた - は落とす", () => {
     expect(addExclusion("java", "-js")).toBe("java -js");
@@ -79,6 +81,27 @@ describe("addExclusion", () => {
   it("空白だけ・- だけなら何もしない", () => {
     expect(addExclusion("java", "   ")).toBe("java");
     expect(addExclusion("java", "-")).toBe("java");
+  });
+});
+
+describe("checkExclusion", () => {
+  it("受け付けられるなら null", () => {
+    expect(checkExclusion("java", "js")).toBeNull();
+    expect(checkExclusion("java", "machine learning")).toBeNull();
+    expect(checkExclusion("java", "-js")).toBeNull();
+  });
+  it("空は empty", () => {
+    expect(checkExclusion("java", "")).toBe("empty");
+    expect(checkExclusion("java", "   ")).toBe("empty");
+    expect(checkExclusion("java", "-")).toBe("empty");
+  });
+  it("引用符は quote", () => {
+    expect(checkExclusion("java", '"machine learning"')).toBe("quote");
+    expect(checkExclusion("java", 'foo "bar"')).toBe("quote");
+  });
+  it("すでに除外していれば duplicate", () => {
+    expect(checkExclusion("java -js", "js")).toBe("duplicate");
+    expect(checkExclusion('java -"machine learning"', "machine learning")).toBe("duplicate");
   });
 });
 

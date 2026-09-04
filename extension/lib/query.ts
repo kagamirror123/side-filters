@@ -55,13 +55,33 @@ function isQuoted(value: string): boolean {
   return value.length >= 2 && value.startsWith('"') && value.endsWith('"');
 }
 
-/** 打たれた語を除外トークンの本体に整える。空白を含めば引用符で囲む */
+/**
+ * 打たれた語を除外トークンの本体に整える。空白を含めば引用符で囲む。
+ * 引用符そのものを含む入力は受け付けない。`foo "bar"` を素直に囲むと `-"foo "bar""` という
+ * 壊れた query になるため。空白入りの語は自分で囲むので、利用者が引用符を打つ必要はない
+ */
 function normalizeWord(word: string): string | null {
+  const text = stripLeadingMinus(word);
+  if (text === "" || text.includes('"')) return null;
+  return /\s/.test(text) ? `"${text}"` : text;
+}
+
+function stripLeadingMinus(word: string): string {
   let text = word.trim();
   while (text.startsWith("-")) text = text.slice(1).trim();
-  if (text === "") return null;
-  if (isQuoted(text)) return text.length > 2 ? text : null;
-  return /\s/.test(text) ? `"${text}"` : text;
+  return text;
+}
+
+/** 除外語として受け付けられない理由。受け付けられるなら null */
+export type ExclusionProblem = "empty" | "quote" | "duplicate";
+
+export function checkExclusion(query: string, word: string): ExclusionProblem | null {
+  const text = stripLeadingMinus(word);
+  if (text === "") return "empty";
+  if (text.includes('"')) return "quote";
+  const value = normalizeWord(word);
+  if (value === null) return "empty";
+  return getExclusions(query).includes(value) ? "duplicate" : null;
 }
 
 /** いま除外されている語。本人が手で打った -foo もここに出る */

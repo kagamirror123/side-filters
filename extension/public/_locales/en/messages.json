@@ -4,7 +4,7 @@
     "description": "Extension name shown in the store and in chrome://extensions"
   },
   "extDescription": {
-    "message": "One-click time range and language filter chips beside Google Search results.",
+    "message": "One-click time, language and search-term filters beside your Google Search results.",
     "description": "Short description shown in the store and in chrome://extensions"
   },
   "cardLabel": {
@@ -132,11 +132,11 @@
     "description": "Validation error for a malformed language code"
   },
   "optionsEmptyTerms": {
-    "message": "No time presets. The card falls back to the defaults until you add one.",
+    "message": "No time presets. The card shows only “Any time”.",
     "description": "Shown when the time preset list is empty"
   },
   "optionsEmptyLangs": {
-    "message": "No language presets. The card falls back to the defaults until you add one.",
+    "message": "No language presets. The card shows only “Any language”.",
     "description": "Shown when the language preset list is empty"
   },
   "unitHour": {
@@ -212,8 +212,14 @@
     "description": "Placeholder of the exclusion field on the card"
   },
   "exclusionRemove": {
-    "message": "Remove from the exclusions",
-    "description": "Accessible name of the × on an exclusion chip"
+    "message": "Remove “$WORD$” from the exclusions",
+    "description": "Accessible name of the × on an exclusion chip. $WORD$ is the excluded word",
+    "placeholders": {
+      "word": {
+        "content": "$1",
+        "example": "linkedin"
+      }
+    }
   },
   "optionsShowQuery": {
     "message": "Show the search-term section",
@@ -266,5 +272,69 @@
   "placementWideAlt": {
     "message": "The card sits in the first row, to the right of the full-width block",
     "description": "Alt text of the wide placement diagram"
+  },
+  "termCustom": {
+    "message": "Custom range set in Google",
+    "description": "Shown under the time options when the URL carries Google's own custom date range"
+  },
+  "termCustomDates": {
+    "message": "Custom range set in Google: $DATES$",
+    "description": "Same as termCustom, with the range from the URL",
+    "placeholders": {
+      "dates": {
+        "content": "$1",
+        "example": "8/1/2026 – 8/31/2026"
+      }
+    }
+  },
+  "exclusionErrorQuote": {
+    "message": "Quotation marks cannot be used here. Words with spaces are quoted for you.",
+    "description": "Validation error shown under the exclusion field"
+  },
+  "exclusionErrorDuplicate": {
+    "message": "That word is already excluded.",
+    "description": "Validation error shown when the same exclusion is entered twice"
+  },
+  "optionsSaving": {
+    "message": "Saving…",
+    "description": "Save status on the settings page"
+  },
+  "optionsSaved": {
+    "message": "Saved",
+    "description": "Save status on the settings page"
+  },
+  "optionsSaveFailed": {
+    "message": "Could not save. Your changes are still on this page.",
+    "description": "Save error on the settings page"
+  },
+  "optionsSaveRetry": {
+    "message": "Try again",
+    "description": "Button that retries a failed save"
+  },
+  "optionsSavedWithErrors": {
+    "message": "Saved. Rows with errors were left out.",
+    "description": "Save status when some rows failed validation and were not stored"
+  },
+  "optionsErrorDuplicateTerm": {
+    "message": "Another preset already uses this length",
+    "description": "Validation error for two time presets with the same qdr value"
+  },
+  "optionsErrorDuplicateLang": {
+    "message": "Another preset already uses this code",
+    "description": "Validation error for two language presets with the same code"
+  },
+  "optionsRemoveNamed": {
+    "message": "Remove “$LABEL$”",
+    "description": "Accessible name of the delete-row button, including the row's label",
+    "placeholders": {
+      "label": {
+        "content": "$1",
+        "example": "Week"
+      }
+    }
+  },
+  "optionsSaveStatusLabel": {
+    "message": "Save status",
+    "description": "Accessible name of the live region that announces the save status"
   }
 }
