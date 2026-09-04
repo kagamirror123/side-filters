@@ -1,6 +1,6 @@
 {
   "name": "side-filters",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Google 検索結果の右カラムに期間・言語・検索語の絞り込みチップを出す Chrome 拡張",
   "type": "module",
