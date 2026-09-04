@@ -1,7 +1,7 @@
 // 設定は chrome.storage.sync に 1 項目で置く。読み出し時に形を整え、不正な値は項目単位で既定へ戻す
 import { browser } from "wxt/browser";
 import { storage } from "wxt/utils/storage";
-import { isValidQdr, type Qdr } from "./url";
+import { isValidLangCode, isValidQdr, type Qdr } from "./url";
 
 export interface TermPreset {
   label: string;
@@ -44,7 +44,6 @@ export interface Settings {
 type MessageKey = Parameters<typeof browser.i18n.getMessage>[0];
 type Translate = (key: MessageKey) => string;
 
-const LR_PATTERN = /^lang_[a-zA-Z]{2,3}(?:-[a-zA-Z]{2,4})?$/;
 const MAX_LABEL_LENGTH = 40;
 
 function i18n(key: MessageKey): string {
@@ -84,31 +83,59 @@ function cleanLabel(value: unknown): string | null {
   return label === "" ? null : label;
 }
 
-function normalizeTerms(value: unknown): TermPreset[] | null {
+/**
+ * プリセットの配列を整える。空配列は「利用者が全部消した」という有効な設定なので、そのまま通す。
+ * 既定へ戻すのは配列ですらないとき（未設定・壊れたデータ）だけ。
+ * 同じ絞り込み値（qdr / lr）の行は先に出てきた 1 つだけ残す。同じ選択肢が同時に選択中になるのを防ぐ
+ */
+function normalizeList<T>(
+  value: unknown,
+  read: (item: Record<string, unknown>) => T | null,
+  keyOf: (item: T) => string,
+): T[] | null {
   if (!Array.isArray(value)) return null;
-  const terms: TermPreset[] = [];
-  for (const item of value) {
-    if (!isRecord(item)) continue;
-    const label = cleanLabel(item.label);
-    if (label === null || typeof item.qdr !== "string" || !isValidQdr(item.qdr)) continue;
-    terms.push({ label, qdr: item.qdr });
+  const items: T[] = [];
+  const seen = new Set<string>();
+  for (const raw of value) {
+    if (!isRecord(raw)) continue;
+    const item = read(raw);
+    if (item === null) continue;
+    const key = keyOf(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    items.push(item);
   }
-  return terms.length === 0 ? null : terms;
+  return items;
+}
+
+function normalizeTerms(value: unknown): TermPreset[] | null {
+  return normalizeList<TermPreset>(
+    value,
+    (item) => {
+      const label = cleanLabel(item.label);
+      if (label === null || typeof item.qdr !== "string" || !isValidQdr(item.qdr)) return null;
+      return { label, qdr: item.qdr };
+    },
+    (term) => term.qdr,
+  );
 }
 
 function normalizeLangs(value: unknown): LangPreset[] | null {
-  if (!Array.isArray(value)) return null;
-  const langs: LangPreset[] = [];
-  for (const item of value) {
-    if (!isRecord(item)) continue;
-    const label = cleanLabel(item.label);
-    if (label === null || typeof item.lr !== "string" || !LR_PATTERN.test(item.lr)) continue;
-    langs.push({ label, lr: item.lr });
-  }
-  return langs.length === 0 ? null : langs;
+  return normalizeList<LangPreset>(
+    value,
+    (item) => {
+      const label = cleanLabel(item.label);
+      if (label === null || typeof item.lr !== "string" || !isValidLangCode(item.lr)) return null;
+      return { label, lr: item.lr };
+    },
+    (lang) => lang.lr,
+  );
 }
 
-/** storage から読んだ値を Settings に整える。壊れている項目だけ既定へ戻す */
+/**
+ * storage から読んだ値を Settings に整える。壊れている項目だけ既定へ戻す。
+ * プリセットは空配列も有効な設定として通す（`normalizeList` を参照）
+ */
 export function normalizeSettings(raw: unknown, defaults: Settings = defaultSettings()): Settings {
   if (!isRecord(raw)) return defaults;
   return {

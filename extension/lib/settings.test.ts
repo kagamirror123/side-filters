@@ -67,12 +67,12 @@ describe("normalizeSettings", () => {
     expect(out.langs).toEqual([{ label: "英語", lr: "lang_en" }]);
     expect(out.showLangs).toBe(true);
   });
-  it("配列の中の不正な要素だけ捨てる。全部捨てたら既定へ", () => {
+  it("配列の中の不正な要素だけ捨てる", () => {
     const out = normalizeSettings(
       {
         terms: [
           { label: "ok", qdr: "w" },
-          { label: "", qdr: "w" },
+          { label: "", qdr: "d" },
           { label: "bad", qdr: "3d" },
           null,
           "x",
@@ -85,7 +85,39 @@ describe("normalizeSettings", () => {
       defaults,
     );
     expect(out.terms).toEqual([{ label: "ok", qdr: "w" }]);
-    expect(out.langs).toEqual(defaults.langs);
+    // 全部落ちても既定は復活させない。配列である以上、利用者の設定として扱う
+    expect(out.langs).toEqual([]);
+  });
+  it("空配列は利用者の設定としてそのまま通す（既定を復活させない）", () => {
+    const out = normalizeSettings({ terms: [], langs: [] }, defaults);
+    expect(out.terms).toEqual([]);
+    expect(out.langs).toEqual([]);
+  });
+  it("配列でないときだけ既定へ戻す", () => {
+    for (const raw of [{ terms: undefined }, { terms: "x" }, { terms: 1 }, { terms: {} }]) {
+      expect(normalizeSettings(raw, defaults).terms).toEqual(defaults.terms);
+    }
+  });
+  it("同じ qdr / lr の行は先に出てきた 1 つだけ残す", () => {
+    const out = normalizeSettings(
+      {
+        terms: [
+          { label: "1週間", qdr: "w" },
+          { label: "week", qdr: "w" },
+          { label: "1か月", qdr: "m" },
+        ],
+        langs: [
+          { label: "日本語", lr: "lang_ja" },
+          { label: "Japanese", lr: "lang_ja" },
+        ],
+      },
+      defaults,
+    );
+    expect(out.terms).toEqual([
+      { label: "1週間", qdr: "w" },
+      { label: "1か月", qdr: "m" },
+    ]);
+    expect(out.langs).toEqual([{ label: "日本語", lr: "lang_ja" }]);
   });
   it("ラベルは前後の空白を落とし、長すぎれば切る", () => {
     const out = normalizeSettings(
@@ -133,9 +165,16 @@ describe("storage", () => {
     expect(await loadSettings()).toEqual(s);
   });
 
-  it("壊れた保存値は整えて返す", async () => {
+  it("壊れた項目だけ既定へ戻し、空配列はそのまま読み戻す", async () => {
     await fakeBrowser.storage.sync.set({ settings: { terms: 1, langs: [], showLangs: false } });
-    expect(await loadSettings()).toEqual({ ...defaults, showLangs: false });
+    expect(await loadSettings()).toEqual({ ...defaults, langs: [], showLangs: false });
+  });
+
+  it("空のプリセットを保存すると、読み戻しても空のまま", async () => {
+    await saveSettings({ ...defaults, terms: [], langs: [] });
+    const loaded = await loadSettings();
+    expect(loaded.terms).toEqual([]);
+    expect(loaded.langs).toEqual([]);
   });
 
   it("変更を監視でき、解除できる", async () => {
