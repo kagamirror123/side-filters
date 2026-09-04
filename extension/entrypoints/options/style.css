@@ -39,6 +39,24 @@ body {
   line-height: 1.6;
 }
 
+/*
+ * 保存の状態。変化に気付ける程度には出しつつ、目立たせすぎない。
+ * 高さを固定して、出入りで下の内容がずれないようにする
+ */
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-color-kumo-subtle);
+}
+
+.save-status[data-state="error"] {
+  color: var(--text-color-kumo-danger);
+}
+
 .section {
   display: flex;
   flex-direction: column;
