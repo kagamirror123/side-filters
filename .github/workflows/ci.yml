@@ -49,4 +49,7 @@ jobs:
         with:
           name: side-filters-${{ github.ref_name }}
           path: .output/*.zip
+          # .output は隠しディレクトリ。upload-artifact は既定で隠しファイルを除くので明示する
+          # （v1.0.0 のタグで「No files were found」になった）
+          include-hidden-files: true
           if-no-files-found: error
