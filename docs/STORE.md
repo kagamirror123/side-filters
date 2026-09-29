@@ -148,8 +148,15 @@ Chrome Web Store の [User Data FAQ](https://developer.chrome.com/docs/webstore/
 1 枚に詰めるとタイトルか主要設定のどちらかが切れるので 2 枚に分けている。
 画像は必ず実画面から撮る（作図で設定画面を再現しない）。
 
-小さいプロモタイル 440×280 は任意だが、あると一覧での見え方がよくなる。
-`assets/icon.svg` の図案を流用して作れる。
+小さいプロモタイル 440×280（任意）は `assets/store/promo-440x280.png`。
+図案は `assets/promo-tile.svg`（アイコンと同じ青・同じ形）。作り直すときは:
+
+```bash
+rsvg-convert -w 880 -h 560 assets/promo-tile.svg -o /tmp/promo@2x.png
+sips -z 280 440 /tmp/promo@2x.png --out assets/store/promo-440x280.png
+```
+
+マーキータイル 1400×560 は特集枠用なので用意しない。
 
 ---
 

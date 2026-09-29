@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280" width="440" height="280" role="img" aria-label="Side Filters for Google Search">
+  <!--
+    ストアの小さいプロモタイル（440×280）。assets/icon.svg と同じ図案・同じ青を使う。
+    一覧では縮んで出るので、要素は「印」「名前」「一言」の 3 つだけに絞る。
+  -->
+  <rect width="440" height="280" fill="#1a73e8" />
+
+  <!-- 拡張のアイコンをそのまま白いカードとして置く -->
+  <g transform="translate(40 84) scale(0.875)">
+    <rect width="128" height="128" rx="28" fill="#ffffff" />
+    <rect x="22" y="34" width="34" height="60" rx="8" fill="#1a73e8" opacity="0.5" />
+    <rect x="68" y="34" width="38" height="24" rx="12" fill="#1a73e8" />
+    <rect x="68" y="70" width="38" height="24" rx="12" fill="#1a73e8" opacity="0.5" />
+  </g>
+
+  <text x="180" y="140" fill="#ffffff"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="36" font-weight="700">Side Filters</text>
+  <text x="182" y="172" fill="#ffffff" opacity="0.85"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17">for Google Search</text>
+</svg>
