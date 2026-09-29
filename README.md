@@ -3,9 +3,8 @@
 Google 検索結果の右カラムに、期間・言語・検索語で絞り込むチップを出す Chrome 拡張。
 ストア掲載名は Side Filters for Google Search。
 
-> 現状: 実装・テスト・ストア素材は揃っている。次は Chrome ウェブストアへの初回申請（手作業）。
+> 現状: Chrome ウェブストアで公開中（v1.0.0、2026-09-09）。
 > 2026-09-04 のレビュー（[docs/REVIEW.md](docs/REVIEW.md)）で挙がった P1・P2 は対応済み。
-> タグ push からの release だけは、実際にタグを打つまで動作を確認できていない。
 
 ## なにをするツールか
 
@@ -29,7 +28,7 @@ Google の空いている右列に、よく使う絞り込みだけを、Google 
 
 ## 入れかた
 
-Chrome Web Store で公開予定。公開後にここへリンクを書く。
+[Chrome ウェブストア](https://chromewebstore.google.com/detail/kblmioifeinhoabbnapjenkdlfhnbhdh)から入れる。
 
 開発版を試すときは、開発する人向けの手順でビルドし、`chrome://extensions` の「パッケージ化されていない拡張機能を読み込む」で `.output/chrome-mv3` を選ぶ。
 
@@ -129,8 +128,10 @@ UI の設計と磨き込みには vpn-on-demand と同じ外部スキルを使�
 5. ~~アイコン（`assets/icon.svg`）とストア素材（[docs/STORE.md](docs/STORE.md)、`assets/store/`）~~
 6. ~~2026-09-04 のレビュー対応（期間の三状態・配置のライフサイクル・保存の契約・アクセシビリティ・CI とストア文言）~~
 
-残っているのは Chrome ウェブストアへの初回申請（手作業）。
-タグ push で release job が走ることは workflow 上そう書いてあるだけで、実際のタグではまだ確認していない。
+7. ~~Chrome ウェブストアで公開（v1.0.0、2026-09-09）~~
+
+`v1.0.0` のタグ push で release job が走ることは確認した。
+zip のアップロードだけ隠しディレクトリの扱いで失敗したので直してあり、次のタグで通しを確認する。
 
 ## ドキュメント
 

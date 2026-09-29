@@ -2,6 +2,17 @@
 
 ストアの入力欄にそのまま貼れる形でまとめてある。掲載言語の既定は英語（manifest の `default_locale` に合わせる）。
 
+## 公開情報
+
+| 項目              | 値                                                                        |
+| ----------------- | ------------------------------------------------------------------------- |
+| ストア URL        | https://chromewebstore.google.com/detail/kblmioifeinhoabbnapjenkdlfhnbhdh |
+| アイテム ID       | `kblmioifeinhoabbnapjenkdlfhnbhdh`                                        |
+| パブリッシャー ID | `f3a32aae-a2c0-4792-9d17-779efd27554b`                                    |
+| 初回公開          | 2026-09-09（v1.0.0）                                                      |
+
+どちらの ID も秘密情報ではない。CI で使うときは GitHub の Secrets に入れる（下の「CI で自動化する場合」）。
+
 ## 基本情報
 
 | 項目         | 値                                                                 |
