@@ -30,7 +30,7 @@
     "@wxt-dev/module-react": "^1.2.2",
     "axe-core": "^4.14.0",
     "happy-dom": "^20.13.1",
-    "oxfmt": "^0.66.0",
+    "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11",
