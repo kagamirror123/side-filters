@@ -407,6 +407,10 @@ Chrome for Testing 151 / macOS arm64 / 1440×900 に unpacked build を読み込
 非対象ページでも `main()` に約 8ms かかるが、その大半は非同期の CSS 取得待ちで、主スレッドを塞いでいない。
 判断を変えるのは、long task・目に見える表示遅延・layout shift のいずれかを再現できたときだけ。
 
+2026-10-25 に React 19.3 へ上げ、content script は 79.2 KiB gzip（+8.5 KiB）になった。同じ条件で測り直した。
+evaluate は中央値 0.8 ms（新しいプロファイルの初回だけ 12 ms）、拡張の関数呼び出しは 1 回あたり最大 4.6 ms。
+Google 側に 50ms 以上の long task（53〜96 ms）が出るようになったが、トレースではその中に拡張の処理は無かった。判断は変えない。
+
 ## 却下した案
 
 | 案                                                 | 却下した理由                                                                                     |
