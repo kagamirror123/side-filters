@@ -299,6 +299,8 @@ submit:
   steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: jdx/mise-action@82a612c5ab8bcda7cc5db6b7e81a8e7584c3dc6e # v5.2.3
+      with:
+        cache: false # 配布物を作るジョブではキャッシュを復元しない（release job と同じ）
     - run: npm ci
     - run: npm run zip
     - run: >
