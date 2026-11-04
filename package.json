@@ -17,7 +17,7 @@
     "fmt:check": "oxfmt --check ."
   },
   "dependencies": {
-    "@cloudflare/kumo": "^2.15.0",
+    "@cloudflare/kumo": "^2.16.0",
     "@phosphor-icons/react": "^2.1.10",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
@@ -30,11 +30,11 @@
     "@wxt-dev/module-react": "^1.2.2",
     "axe-core": "^4.14.0",
     "happy-dom": "^21.0.4",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5",
-    "wxt": "^0.21.4"
+    "wxt": "^0.21.5"
   },
   "allowScripts": {
     "fsevents": false
