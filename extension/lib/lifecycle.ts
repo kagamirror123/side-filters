@@ -108,6 +108,7 @@ export function createPlacement(
   /*
    * 監視は必要な範囲だけに絞る。
    * #rcnt の子（#center_col / #rhs / 全幅の枠 / 自分の host）と、#rhs があればその子だけを見る。
+   * #center_col が入れ物に包まれているときは、その入れ物の子も見る。
    * 骨格がまだ無い間に限り、現れるまで document を広く見る。対象外の画面では何も見ない。
    * 自分の差し込みでも発火するが、reconcile は「同じ場所なら何もしない」ので往復しない
    */
@@ -123,6 +124,8 @@ export function createPlacement(
       return;
     }
     observer.observe(rcnt, { childList: true });
+    const wrapper = doc.querySelector("#center_col")?.parentElement;
+    if (wrapper && wrapper !== rcnt) observer.observe(wrapper, { childList: true });
     const rhs = doc.querySelector("#rhs");
     if (rhs) observer.observe(rhs, { childList: true });
   }

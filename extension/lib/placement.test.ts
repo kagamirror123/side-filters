@@ -24,6 +24,20 @@ describe("findSlot", () => {
     expect(slot?.mode).toBe("grid");
     expect(slot?.anchor.id).toBe("center_col");
   });
+  it("#center_col が #rcnt の直下でなく入れ物の中でも、その直後に足す", () => {
+    document.body.innerHTML = `
+      <div id="rcnt">
+        <div style="display: contents">
+          <div id="ai-overview"></div>
+          <div id="center_col"><div id="rso">results</div></div>
+        </div>
+      </div>`;
+    const slot = findSlot(document);
+    expect(slot?.mode).toBe("grid");
+    const host = document.createElement("side-filters");
+    attachHost(host, slot!);
+    expect(host.previousElementSibling?.id).toBe("center_col");
+  });
   it("骨格が無ければ null", () => {
     document.body.innerHTML = "<div id='center_col'></div>";
     expect(findSlot(document)).toBeNull();

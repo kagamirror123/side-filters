@@ -8,20 +8,29 @@ import { loadSettings, watchSettings, type Settings } from "@/lib/settings";
 import { detectTheme, isTransparent } from "@/lib/theme";
 import { Card } from "./Card";
 
+/**
+ * 全幅の枠の grid-column。端から端までのものと、左右の余白の列を空けるものがある。
+ * どちらもいちばん右の列（余白の列）は使わないので、そこが空く
+ */
+const FULL_WIDTH_COLUMNS = new Set(["1 / -1", "2 / -2"]);
+
 /** 1 行目を全幅で占める枠（AI による概要など）。無ければ null */
 function findFullWidthTopBlock(): Element | null {
-  const rcnt = document.querySelector("#rcnt");
   const centerCol = document.querySelector("#center_col");
-  if (!rcnt || !centerCol) return null;
+  // #center_col は #rcnt の直下とは限らない（display: contents の入れ物に包まれることがある）
+  const parent = centerCol?.parentElement;
+  if (!centerCol || !parent) return null;
 
   const centerTop = centerCol.getBoundingClientRect().top;
   return (
-    [...rcnt.children].find((child) => {
+    [...parent.children].find((child) => {
       if (child === centerCol) return false;
       const box = child.getBoundingClientRect();
       // #center_col より上にあり、Grid の全列にまたがる要素
       return (
-        box.height > 0 && box.top < centerTop && getComputedStyle(child).gridColumn === "1 / -1"
+        box.height > 0 &&
+        box.top < centerTop &&
+        FULL_WIDTH_COLUMNS.has(getComputedStyle(child).gridColumn)
       );
     }) ?? null
   );
@@ -42,20 +51,30 @@ function measureWide() {
 }
 
 /**
- * 全幅の枠の上端にカードを揃える。
- * 枠の高さは「もっと見る」で変わるので、変わったら測り直す。戻り値で監視を解除する
+ * 相手（wide は全幅の枠、grid は #center_col）の上端にカードを揃える。
+ * grid でも要るのは、#center_col が Grid の全列を取る SERP があり、
+ * そのときカードは次の行（検索結果の下）に落ちるため。同じ行に入る SERP では差が 0 になる。
+ * 相手の高さは「もっと見る」や追加読み込みで変わるので、変わったら測り直す
  */
-function alignToTopBlock(host: HTMLElement, block: Element): () => void {
+interface Alignment {
+  /** 測り直す。隠している間は箱が無く測れないので何もしない */
+  align: () => void;
+  /** 監視を解除する */
+  dispose: () => void;
+}
+
+function alignTop(host: HTMLElement, target: Element): Alignment {
   const align = () => {
-    host.style.setProperty("--wide-offset", "0px");
-    const shift = block.getBoundingClientRect().top - host.getBoundingClientRect().top;
-    host.style.setProperty("--wide-offset", `${Math.round(shift)}px`);
+    if (host.dataset.fit !== undefined) return;
+    host.style.setProperty("--top-offset", "0px");
+    const shift = target.getBoundingClientRect().top - host.getBoundingClientRect().top;
+    host.style.setProperty("--top-offset", `${Math.round(shift)}px`);
   };
 
   align();
   const observer = new ResizeObserver(align);
-  observer.observe(block);
-  return () => observer.disconnect();
+  observer.observe(target);
+  return { align, dispose: () => observer.disconnect() };
 }
 
 /**
@@ -68,13 +87,15 @@ function alignToTopBlock(host: HTMLElement, block: Element): () => void {
  */
 const MIN_CARD_WIDTH = 240;
 
-function checkFit(host: HTMLElement): boolean {
+function checkFit(host: HTMLElement, alignment: Alignment | null): boolean {
   const centerCol = document.querySelector("#center_col");
   if (!centerCol) return false;
 
   // 隠している間は箱を持たないので、測る間だけ必ず出す（カード内の実寸判定と同じやり方）
   const hidden = host.dataset.fit;
   delete host.dataset.fit;
+  // 隠している間は上端を揃えられないので、出したこの時点で揃え直す
+  if (hidden !== undefined) alignment?.align();
   const box = host.getBoundingClientRect();
   const center = centerCol.getBoundingClientRect();
   if (hidden !== undefined) host.dataset.fit = hidden;
@@ -106,7 +127,7 @@ export default defineContentScript({
   async main(ctx) {
     let settings: Settings = await loadSettings();
     let root: Root | null = null;
-    let unalign: (() => void) | null = null;
+    let alignment: Alignment | null = null;
     /** mount 直前に決める差し込み先。WXT の anchor / append の両方から読む */
     let target: Slot | null = null;
     let block: Element | null = null;
@@ -133,13 +154,14 @@ export default defineContentScript({
         if (target) attachHost(host as HTMLElement, target);
       },
       onMount(container, _shadow, host) {
-        if (block) unalign = alignToTopBlock(host, block);
+        const alignTo = block ?? (target?.mode === "grid" ? target.anchor : null);
+        if (alignTo) alignment = alignTop(host, alignTo);
         root = createRoot(container);
         render();
       },
       onRemove() {
-        unalign?.();
-        unalign = null;
+        alignment?.dispose();
+        alignment = null;
         drawn = null;
         root?.unmount();
         root = null;
@@ -159,7 +181,7 @@ export default defineContentScript({
         if (root) ui.remove();
       },
       host: () => (root ? ui.shadowHost : null),
-      checkFit: () => (root ? checkFit(ui.shadowHost) : false),
+      checkFit: () => (root ? checkFit(ui.shadowHost, alignment) : false),
     });
 
     /** 位置と内容をまとめて合わせ直す。片方だけ古い状態を作らない */

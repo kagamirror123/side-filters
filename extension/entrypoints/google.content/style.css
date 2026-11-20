@@ -15,29 +15,33 @@
 }
 
 /*
- * #rhs が無いときは #rcnt の Grid に自前の列を足す。#rhs と同じ列に着地する（実測: x=958 / w=372）。
- * 既定の stretch だと host が #center_col と同じ高さまで伸びるので、上に寄せる
+ * #rhs が無いときは #rcnt の Grid に自前の列を足す。#rhs と同じ列に着地する（実測: w=372）。
+ * 既定の stretch だと host が #center_col と同じ高さまで伸びるので、上に寄せる。
+ *
+ * #center_col が全列を取る SERP では、カードは次の行（検索結果の下）に落ちる。
+ * そのぶんは負のマージンで引き上げる。引き上げ量は content script が
+ * #center_col の上端との差を実測して --top-offset に入れる（同じ行に入るときは 0）
  */
 :host([data-slot="grid"]) {
   grid-column: span 7 / -2 !important;
   align-self: start !important;
+  margin-top: var(--top-offset, 0px) !important;
 }
 
 /*
  * 設定で「右上に出す」を選び、条件が揃ったときだけ使う置き場所。
- * いちばん右の列に置き、負のマージンで全幅の枠（AI による概要など）の高さぶん引き上げる。
+ * いちばん右の列に置き、負のマージンで全幅の枠（AI による概要など）の上端まで引き上げる。
  *
- * grid-row: 1 で行を指定するのは駄目だった。Google の枠は grid-row: auto なので、
- * こちらが 1 行目を明示的に取ると枠が 2 行目へ押し出され、ページ全体が下にずれる（実測）。
- * 負のマージンなら行の取り合いが起きず、Google の要素にも触らずに済む。
- * 引き上げ量は content script が実測して --wide-offset に入れる
+ * grid-row で行を指定するのは駄目だった。Google の要素は grid-row: auto なので、
+ * こちらが行を明示的に取ると相手が次の行へ押し出され、ページ全体が下にずれる（実測）。
+ * 負のマージンなら行の取り合いが起きず、Google の要素にも触らずに済む
  */
 :host([data-slot="wide"]) {
   grid-column: -2 / -1 !important;
   align-self: start !important;
   justify-self: start !important;
   width: 372px !important;
-  margin-top: var(--wide-offset, 0px) !important;
+  margin-top: var(--top-offset, 0px) !important;
 }
 
 /*

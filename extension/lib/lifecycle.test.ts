@@ -233,6 +233,22 @@ describe("Google 側の DOM が動いたとき", () => {
     expect(harness.counts.mount).toBe(2);
   });
 
+  it("#center_col が入れ物に包まれていても、host だけ外されたら差し直す", async () => {
+    document.body.innerHTML = `
+      <div id="rcnt">
+        <div style="display: contents">
+          <div id="top"></div>
+          <div id="center_col"><div id="rso">results</div></div>
+        </div>
+      </div>`;
+    const harness = begin();
+    harness.host.remove();
+    await settle();
+
+    expect(harness.host.previousElementSibling?.id).toBe("center_col");
+    expect(harness.counts.mount).toBe(2);
+  });
+
   it("骨格ごと消えたら何も出さない", async () => {
     serp(true);
     const harness = begin();
